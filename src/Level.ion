@@ -1,0 +1,68 @@
+export class Level
+    constructor: ->
+        @tiles = []
+        @tileWidth = 50
+
+        @initSampleLevel()
+
+    properties:
+        initSampleLevel: ->
+            let levelStr = ""
+                .....
+                .....
+                .....
+                .....
+                .....
+
+            let row = []
+            for c in levelStr
+                if c is '\n'
+                    @tiles.push(row)
+                    row = []
+                else
+                    row.push(c)
+            if row.length > 0
+                @tiles.push(row)
+
+            @height = @tiles.length
+            @width = Math.max.apply(..)
+                null
+                @tiles.map(..)
+                    (x) -> x.length
+
+        fillRect: (color) ->
+            game.ctx.fillStyle = color
+            game.ctx.fillRect(..)
+                0, 0, @tileWidth, @tileWidth
+
+        strokeRect: (color, width) ->
+            game.ctx.strokeStyle = color
+            game.ctx.lineWidth = width
+            game.ctx.strokeRect(..)
+                0, 0, @tileWidth, @tileWidth
+
+        renderTile:
+            ".": ->
+                @fillRect('rgb(170, 170, 170)')
+                @strokeRect('rgb(150, 150, 150)', 4)
+
+        render: ->
+            game.ctx.save()
+            game.ctx.translate(..)
+                (game.canvas.width - @width * @tileWidth) / 2 | 0
+                (game.canvas.height - @height * @tileWidth) / 2 | 0
+            for let y = 0; y < @tiles.length; y++
+                let row = @tiles[y]
+                for let x = 0; x < row.length; x++
+
+                    let tile = row[x]
+                    let renderer = @@properties.renderTile[tile]
+                    if not renderer?
+                        continue
+                    renderer = renderer.bind(@)
+
+                    game.ctx.save()
+                    game.ctx.translate(x * @tileWidth, y * @tileWidth)
+                    renderer()
+                    game.ctx.restore()
+            game.ctx.restore()

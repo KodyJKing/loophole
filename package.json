@@ -1,0 +1,20 @@
+{
+  "name": "loophole",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "yarn link brion && yarn link ion && yarn install && ion -c",
+    "browserwatch": "brion -t template.html ion . -o index.html -w",
+    "watch": "ion -w & yarn browserwatch"
+  },
+  "author": "KJK",
+    "dependencies": {
+      "ion": "https://github.com/krisnye/ion.git",
+      "brion": "https://github.com/KodyJKing/brion.git"
+    },
+    "directories": {
+      "lib": "lib",
+      "src": "src"
+    }
+}

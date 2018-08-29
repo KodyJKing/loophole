@@ -1,0 +1,49 @@
+const {Stars, Level} = import './'
+
+export class Game
+    properties:
+        run: ->
+            window.game = @
+
+            @canvas = canvas
+            @fixCanvasDimensions()
+
+            ace.require('ace/ext/language_tools')
+            @editor = ace.edit(..)
+                'editor'
+                {}
+                    mode: 'ace/mode/javascript'
+                    selectionStyle: 'text'
+            @editor.setTheme("ace/theme/monokai")
+            @editor.setOptions(enableBasicAutocompletion: true, enableLiveAutocompletion: true)
+
+            @ctx = canvas.getContext('2d')
+
+            @ctx.fillStyle = 'black'
+            @ctx.fillRect(0, 0, canvas.width, canvas.height)
+
+            @stars = new Stars(@, 40, 300)
+
+            @level = new Level(@)
+
+            @t = 0
+
+            @renderLoop()
+
+        fixCanvasDimensions: ->
+            let canvasRect = @canvas.getBoundingClientRect()
+            @canvas.width = canvasRect.width
+            @canvas.height = canvasRect.height
+
+        renderLoop: ->
+            @t++
+
+            @fixCanvasDimensions()
+
+            @ctx.fillStyle = 'black'
+            @ctx.fillRect(0, 0, canvas.width, canvas.height)
+
+            @stars.render()
+            @level.render()
+
+            window.requestAnimationFrame(@renderLoop.bind(@))
