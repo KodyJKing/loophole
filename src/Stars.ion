@@ -1,24 +1,26 @@
 export class Stars
-    constructor: (game, maxDepth, count) ->
-        @game = game
-        @ctx = game.ctx
-        @canvas = game.canvas
+    constructor: (maxDepth, count, speed) ->
+        @speed = speed
         @stars = []
             for let i = 0; i < count; i++
                 do =>
-                    let z = 1 + (Math.random() * maxDepth) | 0
+                    # Choose r from a quadratic distribution via inverse transform sampling.
+                    # A quadratic distribution is used because the number of visible stars
+                    # at a given depth grows quadratically with depth.
+                    let r = Math.pow(Math.random(), 1/3)
+                    let z = 1 + (r * maxDepth) | 0
                     return {}
-                        x: (Math.random() * @canvas.width * z) | 0
-                        y: (Math.random() * @canvas.height * z) | 0
+                        x: (Math.random() * game.canvas.width * z) | 0
+                        y: (Math.random() * game.canvas.height * z) | 0
                         z: z
                         phase: Math.random() * 2 * Math.PI
     properties:
         render: ->
-            let {t} = @game
-            @ctx.fillStyle = '#e3e5e8'
+            let {t} = game
+            game.ctx.fillStyle = '#e3e5e8'
             for let star in @stars
                 let {x, y, z, phase} = star
-                let dx = x + t * 8
+                let dx = x + t * @speed
 
                 let r = (Math.sin(phase + t / 10) + 1) * 2 | 0
                 let blur = 2 * r / z
@@ -29,7 +31,7 @@ export class Stars
                 let screenX = (dx / z - w / 2) | 0
                 let screenY = (y / z - h / 2) | 0
 
-                @ctx.fillRect(..)
-                    screenX % (@canvas.width + 10) - 5
+                game.ctx.fillRect(..)
+                    screenX % (game.canvas.width + 10) - 5
                     screenY
                     w, h

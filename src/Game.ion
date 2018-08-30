@@ -19,10 +19,10 @@ export class Game
 
             @ctx = canvas.getContext('2d')
 
-            @ctx.fillStyle = 'black'
+            @ctx.fillStyle = '#4b3e77'
             @ctx.fillRect(0, 0, canvas.width, canvas.height)
 
-            @stars = new Stars(@, 40, 300)
+            @stars = new Stars(40, 1000, 16)
 
             @level = new Level(@)
 
@@ -40,7 +40,7 @@ export class Game
 
             @fixCanvasDimensions()
 
-            @ctx.fillStyle = 'black'
+            @ctx.fillStyle = '#1b162b'
             @ctx.fillRect(0, 0, canvas.width, canvas.height)
 
             @stars.render()

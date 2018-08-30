@@ -43,8 +43,8 @@ export class Level
 
         renderTile:
             ".": ->
-                @fillRect('rgb(170, 170, 170)')
-                @strokeRect('rgb(150, 150, 150)', 4)
+                @fillRect('#272822')
+                @strokeRect('#2f3129', 4)
 
         render: ->
             game.ctx.save()
