@@ -23,11 +23,9 @@ export class Game
             @ctx.fillRect(0, 0, canvas.width, canvas.height)
 
             @stars = new Stars(40, 1000, 16)
-
             @level = new Level(@)
 
             @t = 0
-
             @renderLoop()
 
         fixCanvasDimensions: ->
