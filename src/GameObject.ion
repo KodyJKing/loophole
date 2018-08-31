@@ -1,0 +1,22 @@
+const {vector} = import './'
+export class GameObject
+    properties:
+        _init: ->
+        init: ->
+            @position = {x: 0, y: 0}
+            @_init()
+            return @
+        globalPosition:
+            get: ->
+                if @parent
+                    return vector.add(..)
+                        @parent.globalPosition
+                        @position
+                return @position
+        render: ->
+            let p = @globalPosition
+            game.ctx.translate(p.x, p.y)
+            @_render()
+        update: ->
+            @_update()
+        _update: ->

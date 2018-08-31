@@ -1,11 +1,10 @@
-export class Level
-    constructor: ->
-        @tiles = []
-        @tileWidth = 50
-
-        @initSampleLevel()
-
+const {vector} = import './'
+export class Level extends import './GameObject'
+    widthOfTile: 50
     properties:
+        _init: ->
+            @tiles = []
+            @initSampleLevel()
         initSampleLevel: ->
             let levelStr = ""
                 .....
@@ -24,33 +23,44 @@ export class Level
             if row.length > 0
                 @tiles.push(row)
 
-            @height = @tiles.length
-            @width = Math.max.apply(..)
+        tileHeight:
+            get: -> @tiles.length
+        tileWidth:
+            get: -> Math.max.apply(..)
                 null
                 @tiles.map(..)
                     (x) -> x.length
 
+        _update: ->
+            @position = vector.div(..)
+                vector.sub(..)
+                    {x: game.canvas.width, y: game.canvas.height}
+                    {x: @pixelWidth, y: @pixelHeight}
+                2
+
+
+        pixelHeight:
+            get: -> @tileHeight * @@widthOfTile
+        pixelWidth:
+            get: -> @tileWidth * @@widthOfTile
+
         fillRect: (color) ->
             game.ctx.fillStyle = color
             game.ctx.fillRect(..)
-                0, 0, @tileWidth, @tileWidth
+                0, 0, @@widthOfTile, @@widthOfTile
 
         strokeRect: (color, width) ->
             game.ctx.strokeStyle = color
             game.ctx.lineWidth = width
             game.ctx.strokeRect(..)
-                0, 0, @tileWidth, @tileWidth
+                0, 0, @@widthOfTile, @@widthOfTile
 
         renderTile:
             ".": ->
                 @fillRect('#272822')
                 @strokeRect('#2f3129', 4)
 
-        render: ->
-            game.ctx.save()
-            game.ctx.translate(..)
-                (game.canvas.width - @width * @tileWidth) / 2 | 0
-                (game.canvas.height - @height * @tileWidth) / 2 | 0
+        _render: ->
             for let y = 0; y < @tiles.length; y++
                 let row = @tiles[y]
                 for let x = 0; x < row.length; x++
@@ -62,7 +72,6 @@ export class Level
                     renderer = renderer.bind(@)
 
                     game.ctx.save()
-                    game.ctx.translate(x * @tileWidth, y * @tileWidth)
+                    game.ctx.translate(x * @@widthOfTile, y * @@widthOfTile)
                     renderer()
                     game.ctx.restore()
-            game.ctx.restore()

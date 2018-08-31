@@ -23,17 +23,17 @@ export class Game
             @ctx.fillRect(0, 0, canvas.width, canvas.height)
 
             @stars = new Stars(40, 1000, 16)
-            @level = new Level(@)
+            @level = new Level(@).init()
 
             @t = 0
-            @renderLoop()
+            @updateRenderLoop()
 
         fixCanvasDimensions: ->
             let canvasRect = @canvas.getBoundingClientRect()
             @canvas.width = canvasRect.width
             @canvas.height = canvasRect.height
 
-        renderLoop: ->
+        updateRenderLoop: ->
             @t++
 
             @fixCanvasDimensions()
@@ -42,6 +42,8 @@ export class Game
             @ctx.fillRect(0, 0, canvas.width, canvas.height)
 
             @stars.render()
+
+            @level.update()
             @level.render()
 
-            window.requestAnimationFrame(@renderLoop.bind(@))
+            window.requestAnimationFrame(@updateRenderLoop.bind(@))
