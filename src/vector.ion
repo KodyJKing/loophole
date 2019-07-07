@@ -1,7 +1,0 @@
-export const
-    add = (a, b) -> {x: a.x + b.x, y: a.y + b.y}
-    sub = (a, b) -> {x: a.x - b.x, y: a.y - b.y}
-    mul = (a, b) -> {x: a.x * b, y: a.y * b}
-    div = (a, b) -> {x: a.x / b, y: a.y / b}
-    dot = (a, b) -> a.x * b.x + a.y * b.y
-    cross = (a, b) -> a.x * b.x - a.y * b.x
