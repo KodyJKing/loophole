@@ -31,17 +31,28 @@ export default class Canvas {
     }
 
     static rect( x, y, w, h ) {
-        Canvas.context.rect( x, y, w, h )
+        let { context: c } = Canvas
+        c.beginPath()
+        c.rect( x, y, w, h )
+        c.closePath()
         return Canvas
     }
 
     static circle( x, y, r ) {
-        Canvas.context.ellipse( x, y, r, r, 0, 0, Math.PI * 2 )
+        let { context: c } = Canvas
+        c.beginPath()
+        c.ellipse( x, y, r, r, 0, 0, Math.PI * 2 )
+        c.closePath()
         return Canvas
     }
 
     static stroke() {
         Canvas.context.stroke()
+        return Canvas
+    }
+
+    static fill() {
+        Canvas.context.fill()
         return Canvas
     }
 
@@ -62,6 +73,16 @@ export default class Canvas {
 
     static translate( x, y ) {
         Canvas.context.translate( x, y )
+        return Canvas
+    }
+
+    static rotate( angle ) {
+        Canvas.context.rotate( angle )
+        return Canvas
+    }
+
+    static scale( x, y ) {
+        Canvas.context.scale( x, y )
         return Canvas
     }
 

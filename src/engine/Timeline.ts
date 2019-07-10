@@ -6,7 +6,8 @@ function clone( cur, prev: any = undefined, cloned = new Map() ) {
     if ( isValueType( cur ) )
         return cur
 
-    if ( cur.$dirty === false && prev != undefined )
+    let unchanged = cur.$static === true || cur.$dirty === false
+    if ( unchanged && prev != undefined )
         return prev
 
     if ( cloned.has( cur ) )
@@ -25,6 +26,14 @@ function clone( cur, prev: any = undefined, cloned = new Map() ) {
     return result
 }
 
+export function markStatic( object ) {
+    object.$static = true
+}
+
+export function markDirty( object, value ) {
+    object.$dirty = value
+}
+
 export default class Timeline {
     state: any
     snapshots: any[]
@@ -36,7 +45,7 @@ export default class Timeline {
         this.state = state
         this.snapshots = [ clone( state ) ]
         this.time = 0
-        this.snapshotInterval = 10
+        this.snapshotInterval = 100
         this.update = update
     }
 
