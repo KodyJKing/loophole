@@ -14,14 +14,13 @@ function clone( cur, prev: any = undefined, cloned = new Map() ) {
         return cloned.get( cur )
 
     let result = new cur.constructor()
+    cloned.set( cur, result )
     for ( let key in cur ) {
         if ( key == "$dirty" ) continue
         let curVal = cur[ key ]
         let prevVal = prev ? prev[ key ] : undefined
         result[ key ] = clone( curVal, prevVal, cloned )
     }
-
-    cloned.set( cur, result )
 
     return result
 }

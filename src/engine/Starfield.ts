@@ -33,13 +33,15 @@ export default class Starfield {
             let { x, y, z, phase } = star
             x *= width
             y *= height
+            // z = ( z + time * 0.5 ) % 8
             x = ( x - ( time / ( 1 + z ) ) * 100 + width ) % width
-            let angle = ( time + phase ) * Math.PI * 2 * 0.1
+            let angle = ( time + phase ) * Math.PI * 2 * 0.5
             let w = 2 / ( z + 1 )
+            let alpha = ( Math.cos( time + phase * Math.PI * 2 ) + 1 ) / 2
             push()
                 .translate( x, y )
                 .rotate( angle )
-                .fillStyle( "white" )
+                .fillStyle( "rgba(255, 255, 255, " + alpha + ")" )
                 .rect( -w, -w, w * 2, w * 2 )
                 .fill()
                 .pop()
