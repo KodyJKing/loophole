@@ -33,7 +33,7 @@ export default class Starfield {
             let { x, y, z, phase } = star
             x *= width
             y *= height
-            x = ( x - ( time / ( 1 + z ) ) * 10 + width ) % width
+            x = ( x - ( time / ( 1 + z ) ) * 100 + width ) % width
             let angle = ( time + phase ) * Math.PI * 2 * 0.1
             let w = 2 / ( z + 1 )
             push()

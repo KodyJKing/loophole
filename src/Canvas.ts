@@ -66,10 +66,16 @@ export default class Canvas {
         return Canvas
     }
 
-    static image( image, dx, dy ) {
+    static image( image, dx = 0, dy = 0 ) {
         Canvas.context.drawImage( image, dx, dy )
         return Canvas
     }
+
+    static imageAt( image, dx, dy, sx, sy, sw, sh ) {
+        Canvas.context.drawImage( image, sx, sy, sw, sh, dx, dy, sw, sh )
+        return Canvas
+    }
+
 
     static translate( x, y ) {
         Canvas.context.translate( x, y )

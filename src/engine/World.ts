@@ -58,22 +58,36 @@ export default class World {
     }
 
     draw( partialSteps ) {
-        let { canvas, push, pop } = Canvas
+        let { canvas, push, pop, translate, scale } = Canvas
         let { width, height } = canvas
         let { pixelWidth, pixelHeight } = this
 
         this.stars.draw( this.time + partialSteps )
 
-        push().translate( ( width - pixelWidth ) / 2, ( height - pixelHeight ) / 2 )
+        push().translate( width / 2, height / 2 )
+        this.drawTiles( partialSteps )
+        pop()
+
+    }
+
+    drawTiles( partialSteps ) {
+        const zoom = 2
+
+        let { canvas, push, pop, translate, scale } = Canvas
+        let { pixelWidth, pixelHeight } = this
+
+        push().scale( zoom, zoom ).translate( - pixelWidth / 2, - pixelHeight / 2 )
         for ( let y = 0; y < this.height; y++ ) {
             for ( let x = 0; x < this.width; x++ ) {
                 let tile = this.getTile( x, y )
-                if ( tile )
+                if ( tile ) {
+                    push().translate( x * 32, y * 32 )
                     tile.draw( this, x, y, partialSteps )
+                    pop()
+                }
             }
         }
         pop()
-
     }
 
     update() {
