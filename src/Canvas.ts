@@ -6,12 +6,16 @@ export default class Canvas {
     static setup() {
         Canvas.canvas = document.getElementById( "canvas" ) as HTMLCanvasElement
         Canvas.context = Canvas.canvas.getContext( "2d" ) as CanvasRenderingContext2D
-        Canvas.context.imageSmoothingEnabled = false
     }
 
-    static resizeCanvas() {
-        Canvas.canvas.width = innerWidth
-        Canvas.canvas.height = innerHeight
+    static fitWindow() {
+        Canvas.canvas.style.width = innerWidth + "px"
+        Canvas.canvas.style.height = innerHeight + "px"
+        Canvas.canvas.width = innerWidth * 2
+        Canvas.canvas.height = innerHeight * 2
+
+        // Canvas.canvas.width = innerWidth
+        // Canvas.canvas.height = innerHeight
     }
 
     static background( style ) {

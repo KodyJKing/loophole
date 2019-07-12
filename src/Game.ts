@@ -15,8 +15,12 @@ export default class Game {
     }
 
     constructor() {
-        let world = World.create( 23, 15 )
+        let world = this.setupWorld()
+        this.timeline = new Timeline( world, ( world ) => world.update() )
+    }
 
+    setupWorld() {
+        let world = World.create( 23, 15 )
         for ( let x = 0; x < world.width; x++ ) {
             world.setTile( x, 0, new TilePanel() )
             world.setTile( x, world.height - 1, new TilePanel() )
@@ -37,7 +41,7 @@ export default class Game {
 
         world.setTile( 3, 1, new TileBot() )
 
-        this.timeline = new Timeline( world, ( world ) => world.update() )
+        return world
     }
 
     get world() {
@@ -47,23 +51,21 @@ export default class Game {
     update() {
         this.draw()
 
-        let t = performance.now()
-        let factor = 24 * this.framesPerStep / 2
-        this.frames = Math.floor( ( Math.sin( t / factor * 0.5 ) + 1 ) * factor )
+        // let t = performance.now()
+        // let factor = 24 * this.framesPerStep / 2
+        // this.frames = Math.floor( ( Math.sin( t / factor * 0.5 ) + 1 ) * factor )
 
-        // this.frames += this.timeDir
-        // if ( this.frames <= 0 || this.frames >= 24 * this.framesPerStep )
-        //     this.timeDir *= -1
+        this.frames += this.timeDir
+        if ( this.frames <= 0 || this.frames >= 24 * this.framesPerStep )
+            this.timeDir *= -1
 
         let step = Math.floor( this.frames / this.framesPerStep )
         this.timeline.gotoTime( step )
     }
 
     draw() {
-        let { background, context: c } = Canvas
-        background( "#0a0311" )
-        // background( "#000000" )
-        // background( "#202340" )
+        Canvas.fitWindow()
+        Canvas.context.imageSmoothingEnabled = false
         this.world.draw( this.partialSteps )
     }
 }

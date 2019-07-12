@@ -1,10 +1,6 @@
 import Canvas from "../Canvas";
-import getImage from "../getImage";
 import Tile from "./tiles/Tile";
-import Vector from "../Vector";
-import { markStatic } from "./Timeline";
 import Starfield from "./Starfield";
-import { setFlagsFromString } from "v8";
 
 export default class World {
     tiles!: ( Tile | null )[]
@@ -58,12 +54,12 @@ export default class World {
     }
 
     draw( partialSteps ) {
-        let { canvas, push, pop, translate, scale } = Canvas
+        let { canvas, push, pop, background } = Canvas
         let { width, height } = canvas
-        let { pixelWidth, pixelHeight } = this
-
+        // background( "#0a0311" )
+        background( "#151729" )
+        // background( "#434da1" )
         this.stars.draw( this.time + partialSteps )
-
         push().translate( width / 2, height / 2 )
         this.drawTiles( partialSteps )
         pop()
@@ -71,9 +67,9 @@ export default class World {
     }
 
     drawTiles( partialSteps ) {
-        const zoom = 2
+        const zoom = 4
 
-        let { canvas, push, pop, translate, scale } = Canvas
+        let { push, pop } = Canvas
         let { pixelWidth, pixelHeight } = this
 
         push().scale( zoom, zoom ).translate( - pixelWidth / 2, - pixelHeight / 2 )

@@ -2,18 +2,17 @@ import Tile from "./Tile";
 import World from "../World";
 import getImage from "../../getImage";
 import Canvas from "../../Canvas";
-import Game from "../../Game";
-import { ELOOP } from "constants";
-import { throws } from "assert";
 
 export class TilePanel extends Tile { }
 
 export class TileMoving extends Tile {
     lastMove = -1
     get direction() { return 1 }
+
     free( world: World, x, y ) {
         return world.isEmpty( x, y + this.direction )
     }
+
     update( world: World, x, y ) {
         if ( this.lastMove < world.time ) {
             if ( this.free( world, x, y ) ) {
@@ -23,8 +22,18 @@ export class TileMoving extends Tile {
             }
         }
     }
+
     draw( world: World, x, y, partialSteps ) {
         if ( this.free( world, x, y ) ) {
+
+            // // Motion blur
+            // for ( let i = 0; i < 5; i++ ) {
+            //     Canvas.push().translate( 0, this.direction * Tile.width * ( partialSteps - 0.1 * i ) )
+            //     Canvas.context.globalAlpha = 0.05
+            //     this.drawInternal( world, x, y, partialSteps )
+            //     Canvas.pop()
+            // }
+
             Canvas.push().translate( 0, this.direction * Tile.width * partialSteps )
             this.drawInternal( world, x, y, partialSteps )
             Canvas.pop()
@@ -32,20 +41,25 @@ export class TileMoving extends Tile {
             this.drawInternal( world, x, y, partialSteps )
         }
     }
+
     drawInternal( world: World, x, y, partialSteps ) {
         super.draw( world, x, y, partialSteps )
     }
 }
 
 export class TileMover extends TileMoving {
+
     dy = -1
     get direction() { return this.dy }
+
     get image() {
         return this.dy > 0 ? getImage( "TileDown" ) : getImage( "TileUp" )
     }
+
     free( world: World, x, y ) {
         return world.isEmpty( x, y + this.direction )
     }
+
     update( world: World, x, y ) {
         if ( !this.free( world, x, y ) )
             this.dy *= -1
