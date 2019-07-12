@@ -33,7 +33,7 @@ export default class Starfield {
     }
 
     draw( time ) {
-        let { canvas, push } = Canvas
+        let { canvas, push, fillStyle } = Canvas
         let { width, height } = canvas
         for ( let star of this.stars ) {
             let { x, y, z, phase } = star
@@ -43,13 +43,18 @@ export default class Starfield {
             let angle = ( time + phase ) * Math.PI * 2 * 0.25
             let w = 24 / ( z + 1 )
             let alpha = ( Math.cos( time + phase * Math.PI * 2 ) + 1 ) / 2
-            push()
-                .translate( x, y )
-                .rotate( angle )
-                .fillStyle( "rgba(255, 255, 255, " + alpha + ")" )
-                .rect( -w, -w, w * 2, w * 2 )
+
+            // push()
+            //     .translate( x, y )
+            //     .rotate( angle )
+            //     .fillStyle( "rgba(255, 255, 255, " + alpha + ")" )
+            //     .rect( -w, -w, w * 2, w * 2 )
+            //     .fill()
+            //     .pop()
+
+            fillStyle( "rgba(255, 255, 255, " + alpha + ")" )
+                .rect( x - w, y - w, w * 2, w * 2 )
                 .fill()
-                .pop()
         }
     }
 }

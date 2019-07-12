@@ -13,9 +13,6 @@ export default class Canvas {
         Canvas.canvas.style.height = innerHeight + "px"
         Canvas.canvas.width = innerWidth * 2
         Canvas.canvas.height = innerHeight * 2
-
-        // Canvas.canvas.width = innerWidth
-        // Canvas.canvas.height = innerHeight
     }
 
     static background( style ) {
@@ -82,6 +79,7 @@ export default class Canvas {
 
 
     static translate( x, y ) {
+        // Canvas.context.translate( Math.round( x ), Math.round( y ) )
         Canvas.context.translate( x, y )
         return Canvas
     }
