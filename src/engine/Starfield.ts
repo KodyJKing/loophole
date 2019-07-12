@@ -21,8 +21,14 @@ export default class Starfield {
         let result = new Starfield()
         markStatic( result )
         result.stars = []
-        for ( let i = 0; i < 1000; i++ )
-            result.stars.push( new Star( Math.random(), Math.random(), Math.random() * 8, Math.random() ) )
+        for ( let i = 0; i < 1000; i++ ) {
+            // The cross section of the viewing frustum grows quadratically with z.
+            // So z should be quadratically distributed.
+            // Taking the cuberoot of a uniform random number yeilds a quadratic distribution.
+            // https://en.wikipedia.org/wiki/Inverse_transform_sampling
+            let z = Math.random() ** ( 1 / 3 ) * 16
+            result.stars.push( new Star( Math.random(), Math.random(), z, Math.random() ) )
+        }
         return result
     }
 
@@ -34,8 +40,8 @@ export default class Starfield {
             x *= width
             y *= height
             x = ( x - ( time / ( 1 + z ) ) * 200 + width ) % width
-            let angle = ( time + phase ) * Math.PI * 2 * 0.5
-            let w = 8 / ( z + 1 )
+            let angle = ( time + phase ) * Math.PI * 2 * 0.25
+            let w = 24 / ( z + 1 )
             let alpha = ( Math.cos( time + phase * Math.PI * 2 ) + 1 ) / 2
             push()
                 .translate( x, y )
