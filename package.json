@@ -6,6 +6,7 @@
     "license": "none",
     "scripts": {
         "dev": "yarn install && tsc",
+        "build": "tsc",
         "watch": "tsc -w",
         "webpack": "webpack-dev-server",
         "test": "ava --watch --verbose"

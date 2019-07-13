@@ -11,7 +11,7 @@ module.exports = {
         contentBase: webroot,
         hot: true,
         host: "0.0.0.0",
-        port: 3000,
+        port: 8080,
         // proxy: [ {
         //     path: "/api/**",
         //     target: "http://localhost:8080",

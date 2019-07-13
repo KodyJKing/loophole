@@ -1,7 +1,6 @@
 import World from "../World";
-import getImage from "../../getImage";
-import Canvas from "../../Canvas";
-import Game from "../../Game";
+import Canvas from "../Canvas";
+import { getImage } from "../common";
 
 
 export default class Tile {
