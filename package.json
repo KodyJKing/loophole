@@ -8,6 +8,8 @@
         "dev": "yarn install && tsc",
         "build": "tsc",
         "watch": "tsc -w",
+        "buildPeg": "pegjs -o src/vm/assemblyParser.js src/vm/assemblyParser.pegjs",
+        "watchPeg": "nodemon --watch src/vm -e pegjs -x yarn buildPeg",
         "webpack": "webpack-dev-server",
         "test": "ava --watch --verbose"
     },
@@ -15,7 +17,8 @@
     "devDependencies": {
         "ava": "^2.2.0",
         "webpack": "^4.35.3",
-        "webpack-cli": "^3.3.5"
+        "webpack-cli": "^3.3.5",
+        "pegjs": "^0.10.0"
     },
     "dependencies": {
         "express": "^4.17.1"

@@ -1,22 +1,40 @@
 export enum Instruction {
-    MOV, CMP, JE,
-    ADD, SUB, MUL,
-    DIV, PRINT
+    MOV, JT, JF,
+    NOT, COMP,
+    CMP, GT, LT, GTE, LTE,
+    ADD, SUB, MUL, DIV,
+    AND, OR,
+    PRINT, OUT
 }
 
-export enum RefType {
-    ABSOLUTE,
-    RELATIVE,
+export enum ArgType {
+    MEM_FIXED,
+    MEM,
+    MEM_OFFSET,
     REGISTER,
     PRIMITIVE
 }
 
+function unaryOp( instruction, x ) {
+    switch ( instruction ) {
+        case Instruction.NOT: return x == 0 ? 1 : 0
+        case Instruction.COMP: return ~x
+    }
+}
+
 function binaryOp( instruction, x, y ) {
     switch ( instruction ) {
+        case Instruction.CMP: return x == y ? 1 : 0
+        case Instruction.GT: return x > y ? 1 : 0
+        case Instruction.LT: return x < y ? 1 : 0
+        case Instruction.GTE: return x >= y ? 1 : 0
+        case Instruction.LTE: return x <= y ? 1 : 0
         case Instruction.ADD: return x + y
         case Instruction.SUB: return x - y
         case Instruction.MUL: return x * y
         case Instruction.DIV: return x / y
+        case Instruction.AND: return x & y
+        case Instruction.OR: return x | y
     }
 }
 
@@ -26,12 +44,13 @@ export default class VM {
     program!: number[]
     memory!: number[]
     registers!: number[]
+    // callbacks!: (x: number) =>
 
     static create( program: any[], memory: number, registers: number ) {
         let result = new VM()
         result.program = program
-        result.memory = new Array( memory )
-        result.registers = new Array( registers )
+        result.memory = new Array( memory ).fill( 0 )
+        result.registers = new Array( registers ).fill( 0 )
         return result
     }
 
@@ -39,38 +58,32 @@ export default class VM {
         return this.program[ this.counter++ ]
     }
 
-    pushCounter() {
-        this.counters.push( this.counter )
-    }
-
-    popCounter() {
-        let popped = this.counters.pop()
-        if ( popped )
-            this.counter = popped
-    }
-
     getRval() {
         let rvalType = this.consume()
         switch ( rvalType ) {
-            case RefType.ABSOLUTE: {
+            case ArgType.MEM_FIXED: {
                 let addr = this.consume()
                 return this.memory[ addr ]
             }
 
-            case RefType.RELATIVE: {
+            case ArgType.MEM_OFFSET: {
+                let register = this.consume()
+                return this.memory[ this.registers[ register ] ]
+            }
+
+            case ArgType.MEM_OFFSET: {
                 let register = this.consume()
                 let offset = this.consume()
                 return this.memory[ this.registers[ register ] + offset ]
             }
 
-            case RefType.REGISTER: {
+            case ArgType.REGISTER: {
                 let register = this.consume()
                 return this.registers[ register ]
             }
 
-            case RefType.PRIMITIVE: {
+            case ArgType.PRIMITIVE:
                 return this.consume()
-            }
 
             default:
                 throw new Error( `Unrecognized rval type ${rvalType} at ${this.counter}` )
@@ -80,20 +93,26 @@ export default class VM {
     setLval( x: number ) {
         let lvalType = this.consume()
         switch ( lvalType ) {
-            case RefType.ABSOLUTE: {
+            case ArgType.MEM_FIXED: {
                 let addr = this.consume()
                 this.memory[ addr ] = x
                 break
             }
 
-            case RefType.RELATIVE: {
+            case ArgType.MEM: {
+                let register = this.consume()
+                this.memory[ this.registers[ register ] ] = x
+                break
+            }
+
+            case ArgType.MEM_OFFSET: {
                 let register = this.consume()
                 let offset = this.consume()
                 this.memory[ this.registers[ register ] + offset ] = x
                 break
             }
 
-            case RefType.REGISTER: {
+            case ArgType.REGISTER: {
                 let register = this.consume()
                 this.registers[ register ] = x
                 break
@@ -112,30 +131,54 @@ export default class VM {
                 break
             }
 
-            case Instruction.CMP: { }
+            case Instruction.JT:
+            case Instruction.JF: {
+                let condition = this.getRval()
+                let addr = this.getRval()
+                let expected = instruction == Instruction.JT ? 1 : 0
+                if ( condition == expected )
+                    this.counter = addr
+                break
+            }
+
+            case Instruction.NOT:
+            case Instruction.COMP: {
+                let x = this.getRval()
+                this.setLval( unaryOp( instruction, x ) as number )
+                break
+            }
+
+            case Instruction.CMP:
+            case Instruction.GT:
+            case Instruction.LT:
+            case Instruction.GTE:
+            case Instruction.LTE:
             case Instruction.ADD:
             case Instruction.SUB:
             case Instruction.MUL:
-            case Instruction.DIV: {
-                let lval = this.getRval()
-                let rval = this.getRval()
-                this.setLval( binaryOp( instruction, lval, rval ) )
+            case Instruction.DIV:
+            case Instruction.AND:
+            case Instruction.OR: {
+                let x = this.getRval()
+                let y = this.getRval()
+                this.setLval( binaryOp( instruction, x, y ) )
                 break
             }
 
-            case Instruction.PRINT: {
+            case Instruction.PRINT:
                 console.log( this.getRval() )
                 break
-            }
 
-            case undefined: {
-                console.log( "Program exited normally." )
-                return false
-            }
+            // case instruction.OUT:
 
             default:
                 throw new Error( `Unrecognized instruction ${instruction} at ${this.counter}` )
         }
-        return true
+
+        return this.counter < this.program.length
+    }
+
+    run() {
+        while ( this.step() ) { }
     }
 }

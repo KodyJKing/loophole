@@ -5,12 +5,12 @@
     "compilerOptions": {
         "target": "ESNEXT",
         "module": "commonjs",
-        "declaration": true,
+        // "declaration": true,
         "outDir": "lib",
         "rootDir": "src",
         "strict": true,
         "noImplicitAny": false,
-        // "allowJs": true,
+        "allowJs": true,
         "allowSyntheticDefaultImports": true,
         "experimentalDecorators": true,
         "esModuleInterop": true

@@ -13,8 +13,8 @@ test( "Timeline", t => {
     for ( let i = 0; i < 100; i++ )
         timeline.step()
 
-    console.log( timeline.state )
-    console.log( timeline.getState( 42 ) )
+    // console.log( timeline.state )
+    // console.log( timeline.getState( 42 ) )
 
     t.pass()
 } )
