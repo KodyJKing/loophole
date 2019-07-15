@@ -1,11 +1,4 @@
-export enum Instruction {
-    MOV, JT, JF,
-    NOT, COMP,
-    CMP, GT, LT, GTE, LTE,
-    ADD, SUB, MUL, DIV,
-    AND, OR,
-    PRINT, OUT
-}
+import { instructionByCode } from "./instructions";
 
 export enum ArgType {
     MEM_FIXED,
@@ -13,29 +6,6 @@ export enum ArgType {
     MEM_OFFSET,
     REGISTER,
     PRIMITIVE
-}
-
-function unaryOp( instruction, x ) {
-    switch ( instruction ) {
-        case Instruction.NOT: return x == 0 ? 1 : 0
-        case Instruction.COMP: return ~x
-    }
-}
-
-function binaryOp( instruction, x, y ) {
-    switch ( instruction ) {
-        case Instruction.CMP: return x == y ? 1 : 0
-        case Instruction.GT: return x > y ? 1 : 0
-        case Instruction.LT: return x < y ? 1 : 0
-        case Instruction.GTE: return x >= y ? 1 : 0
-        case Instruction.LTE: return x <= y ? 1 : 0
-        case Instruction.ADD: return x + y
-        case Instruction.SUB: return x - y
-        case Instruction.MUL: return x * y
-        case Instruction.DIV: return x / y
-        case Instruction.AND: return x & y
-        case Instruction.OR: return x | y
-    }
 }
 
 export default class VM {
@@ -58,7 +28,7 @@ export default class VM {
         return this.program[ this.counter++ ]
     }
 
-    getRval() {
+    getRef() {
         let rvalType = this.consume()
         switch ( rvalType ) {
             case ArgType.MEM_FIXED: {
@@ -90,7 +60,7 @@ export default class VM {
         }
     }
 
-    setLval( x: number ) {
+    setRef( x: number ) {
         let lvalType = this.consume()
         switch ( lvalType ) {
             case ArgType.MEM_FIXED: {
@@ -124,57 +94,12 @@ export default class VM {
     }
 
     step(): boolean {
-        let instruction = this.consume()
-        switch ( instruction ) {
-            case Instruction.MOV: {
-                this.setLval( this.getRval() )
-                break
-            }
-
-            case Instruction.JT:
-            case Instruction.JF: {
-                let condition = this.getRval()
-                let addr = this.getRval()
-                let expected = instruction == Instruction.JT ? 1 : 0
-                if ( condition == expected )
-                    this.counter = addr
-                break
-            }
-
-            case Instruction.NOT:
-            case Instruction.COMP: {
-                let x = this.getRval()
-                this.setLval( unaryOp( instruction, x ) as number )
-                break
-            }
-
-            case Instruction.CMP:
-            case Instruction.GT:
-            case Instruction.LT:
-            case Instruction.GTE:
-            case Instruction.LTE:
-            case Instruction.ADD:
-            case Instruction.SUB:
-            case Instruction.MUL:
-            case Instruction.DIV:
-            case Instruction.AND:
-            case Instruction.OR: {
-                let x = this.getRval()
-                let y = this.getRval()
-                this.setLval( binaryOp( instruction, x, y ) )
-                break
-            }
-
-            case Instruction.PRINT:
-                console.log( this.getRval() )
-                break
-
-            // case instruction.OUT:
-
-            default:
-                throw new Error( `Unrecognized instruction ${instruction} at ${this.counter}` )
-        }
-
+        let instructionCode = this.consume()
+        let instruction = instructionByCode( instructionCode )
+        if ( instruction )
+            instruction( this )
+        else
+            throw new Error( `Unknown instruction code ${instructionCode} at ${this.counter - 1}` )
         return this.counter < this.program.length
     }
 

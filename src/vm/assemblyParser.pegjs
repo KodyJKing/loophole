@@ -2,7 +2,7 @@ Start =
 	Lines
 
 Lines
-	= WSN head: Line tail: ("\n" WSN v: Line { return v })* WSN { return [head].concat(tail) }
+	= WSN head: Line tail: ("\n" WSN v: Line { return v } )* WSN { return [head].concat(tail) }
 
 Line
 	= InstructionLine / LabelLine
@@ -14,7 +14,7 @@ LabelLine
 	= WS name: Identifier ":" WS { return { type: "LabelLine", name } }
     
 Arguments
-	= head: Argument tail: (WS v: Argument { return v })* { return [head].concat(tail) }
+	= head: Argument tail: (WS v: Argument { return v } )* { return [head].concat(tail) }
     
 Argument
 	= MemRef / RegisterRef / LabelRef / Primitive
@@ -26,7 +26,7 @@ FixedAddress
 	= offset: PositiveInteger { return { type: "FixedAddress", offset } }
 
 DynamicAddress
-	= register: RegisterRef WS offset: (op: ("+"/"-") v: PositiveInteger { return op == "+" ? v : -	v })? { return { type: "DynamicAddress", register, offset } }
+	= register: RegisterRef WS offset: (op: ( "+" / "-" ) v: PositiveInteger { return op == "+" ? v : -	v } )? { return { type: "DynamicAddress", register, offset } }
     
 LabelRef
 	= name: Identifier { return { type: "LabelRef", name } }

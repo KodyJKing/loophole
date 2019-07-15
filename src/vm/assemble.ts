@@ -1,5 +1,6 @@
 import { parse } from "./assemblyParser"
-import { Instruction, ArgType } from "./VM";
+import { ArgType } from "./VM";
+import { instructionByName } from "./instructions";
 
 export default function assemble( source: string ) {
     let lines = parse( source ) as any[]
@@ -9,10 +10,10 @@ export default function assemble( source: string ) {
     let labels: { [ name: string ]: number } = {}
 
     function addInstruction( line ) {
-        let instructionCode = Instruction[ line.instruction as string ]
-        if ( instructionCode === undefined )
+        let instruction = instructionByName( line.instruction )
+        if ( !instruction )
             throw new Error( `Unknown instruction ${line.instruction} at line ${lineNum}.` )
-        result.push( instructionCode )
+        result.push( ( instruction as any ).code )
 
         for ( let argument of line.arguments ) {
             switch ( argument.type ) {
