@@ -6,14 +6,14 @@ test( "Assembler", t => {
     let source = `
         MOV 5 R0
         loop:
-        PRINT R0
+        OUT 0 R0
         SUB R0 1 R0
         EQ R0 0 R1
         JF R1 loop
     `
     let program = assemble( source )
     let vm = VM.create( program, 1024, 8 )
-    console.log()
+    vm.listen( 0, x => console.log( x ) )
     vm.run()
     t.pass()
 } )

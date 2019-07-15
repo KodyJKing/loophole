@@ -14,13 +14,14 @@ export default class VM {
     program!: number[]
     memory!: number[]
     registers!: number[]
-    // callbacks!: (x: number) =>
+    listeners!: ( ( number ) => void )[]
 
     static create( program: any[], memory: number, registers: number ) {
         let result = new VM()
         result.program = program
         result.memory = new Array( memory ).fill( 0 )
         result.registers = new Array( registers ).fill( 0 )
+        result.listeners = []
         return result
     }
 
@@ -105,5 +106,9 @@ export default class VM {
 
     run() {
         while ( this.step() ) { }
+    }
+
+    listen( port: number, listener: ( number ) => void ) {
+        this.listeners[ port ] = listener
     }
 }

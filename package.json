@@ -5,8 +5,8 @@
     "author": "Kody King <kody.j.king@gmail.com>",
     "license": "none",
     "scripts": {
-        "dev": "yarn install && tsc",
-        "build": "tsc",
+        "dev": "yarn install && yarn build",
+        "build": "tsc && yarn buildPeg",
         "watch": "tsc -w",
         "buildPeg": "pegjs -o src/vm/assemblyParser.js src/vm/assemblyParser.pegjs",
         "watchPeg": "nodemon --watch src/vm -e pegjs -x yarn buildPeg",
