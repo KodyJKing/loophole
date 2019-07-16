@@ -4,9 +4,9 @@ import Instructions from "./Instructions";
 
 export default function assemble( source: string ) {
     let lines = parse( source ) as any[]
-    let result: number[] = []
+    let result: any[] = []
     let lineNum = 0
-    let labels: { [ name: string ]: number } = {}
+    let declarations: { [ name: string ]: number } = {}
 
     function addInstruction( line ) {
         let instruction = Instructions[ line.instruction ]
@@ -49,7 +49,7 @@ export default function assemble( source: string ) {
 
                 case "LabelRef":
                     result.push( ArgType.PRIMITIVE )
-                    result.push( labels[ argument.name ] )
+                    result.push( argument.name )
                     break
             }
         }
@@ -57,7 +57,7 @@ export default function assemble( source: string ) {
     }
 
     function createLabel( line ) {
-        labels[ line.name ] = result.length
+        declarations[ line.name ] = result.length
     }
 
     for ( let line of lines ) {
@@ -72,5 +72,10 @@ export default function assemble( source: string ) {
         lineNum++
     }
 
-    return result
+    for ( let i = 0; i < result.length; i++ ) {
+        if ( typeof result[ i ] == "string" )
+            result[ i ] = declarations[ result[ i ] ]
+    }
+
+    return result as number[]
 }
