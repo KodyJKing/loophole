@@ -5,7 +5,11 @@ import { getImage } from "../common";
 
 export default class Tile {
     static width = 32
-    update( world: World, x, y ) { }
+    world!: World
+    x = 0
+    y = 0
+    lastUpdated = -1
+    update() { }
     get image(): HTMLImageElement | undefined { return getImage( this.constructor.name ) }
-    draw( world: World, x, y, partialSteps ) { Canvas.image( this.image ) }
+    draw( partialSteps ) { Canvas.image( this.image ) }
 }

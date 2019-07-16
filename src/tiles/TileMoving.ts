@@ -3,35 +3,31 @@ import Canvas from "../Canvas";
 import Tile from "./Tile";
 
 export default class TileMoving extends Tile {
-    lastMove = -1
-    get dx() { return 0 }
-    get dy() { return 1 }
+    dx = 0
+    dy = 0
 
-    free( world: World, x, y ) {
-        return world.isEmpty( x + this.dx, y + this.dy )
+    move( dx, dy ) {
+        let { world, x, y } = this
+        dx = world.isEmpty( x + dx, y ) ? dx : 0
+        dy = world.isEmpty( x, y + dy ) ? dy : 0
+        this.dx += dx
+        this.dy += dy
+        world.remove( x, y )
+        world.setTile( x + dx, y + dy, this )
     }
 
-    update( world: World, x, y ) {
-        if ( this.lastMove < world.time ) {
-            if ( this.free( world, x, y ) ) {
-                this.lastMove = world.time
-                world.remove( x, y )
-                world.setTile( x + this.dx, y + this.dy, this )
-            }
-        }
+    update() {
+        this.dx = 0
+        this.dy = 0
     }
 
-    draw( world: World, x, y, partialSteps ) {
-        if ( this.free( world, x, y ) ) {
-            Canvas.push().translate( this.dx * Tile.width * partialSteps, this.dy * Tile.width * partialSteps )
-            this.drawInternal( world, x, y, partialSteps )
-            Canvas.pop()
-        } else {
-            this.drawInternal( world, x, y, partialSteps )
-        }
+    draw( partialSteps ) {
+        Canvas.push().translate( this.dx * Tile.width * ( partialSteps - 1 ), this.dy * Tile.width * ( partialSteps - 1 ) )
+        this.drawInternal( partialSteps )
+        Canvas.pop()
     }
 
-    drawInternal( world: World, x, y, partialSteps ) {
-        super.draw( world, x, y, partialSteps )
+    drawInternal( partialSteps ) {
+        super.draw( partialSteps )
     }
 }

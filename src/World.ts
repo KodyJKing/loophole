@@ -44,10 +44,14 @@ export default class World {
         return null
     }
 
-    setTile( x, y, v, background = false ) {
+    setTile( x, y, tile: Tile, background = false ) {
         let tiles = background ? this.backgroundTiles : this.tiles
-        if ( this.inBounds( x, y ) )
-            tiles[ this.index( x, y ) ] = v
+        if ( this.inBounds( x, y ) ) {
+            tiles[ this.index( x, y ) ] = tile
+            tile.world = this
+            tile.x = x
+            tile.y = y
+        }
     }
 
     remove( x, y, background = false ) {
@@ -85,7 +89,7 @@ export default class World {
                 let tile = this.getTile( x, y, background )
                 if ( tile ) {
                     push().translate( x * 32, y * 32 )
-                    tile.draw( this, x, y, partialSteps )
+                    tile.draw( partialSteps )
                     pop()
                 }
             }
@@ -98,8 +102,10 @@ export default class World {
         for ( let y = 0; y < this.height; y++ ) {
             for ( let x = 0; x < this.width; x++ ) {
                 let tile = this.getTile( x, y )
-                if ( tile )
-                    tile.update( this, x, y )
+                if ( tile && tile.lastUpdated != this.time ) {
+                    tile.update()
+                    tile.lastUpdated = this.time
+                }
             }
         }
     }

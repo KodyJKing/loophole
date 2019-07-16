@@ -74,7 +74,7 @@ export default class Timeline {
     }
 
     gotoTime( time ) {
-        if ( time > this.time ) {
+        if ( time >= this.time ) {
             while ( this.time < time )
                 this.step()
         } else {

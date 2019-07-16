@@ -12,16 +12,16 @@ export class TileGeneric extends Tile {
         this.yOffset = yOffset
     }
     get image(): HTMLImageElement | undefined { return getImage( this.name ) }
-    draw( world: World, x, y, partialSteps ) {
+    draw( partialSteps ) {
         let { push, pop } = Canvas
         push().translate( 0, this.yOffset )
-        super.draw( world, x, y, partialSteps )
+        super.draw( partialSteps )
         pop()
     }
 }
 
-export const TilePanel = new TileGeneric( "TilePanel" )
-export const TileBackPanel = new TileGeneric( "TileBackPanel" )
-export const TileGlassPanel = new TileGeneric( "TileGlassPanel" )
-export const TileCatwalk = new TileGeneric( "TileCatwalk", -22 )
-export const TileLadder = new TileGeneric( "TileLadder" )
+export const TilePanel = () => new TileGeneric( "TilePanel" )
+export const TileBackPanel = () => new TileGeneric( "TileBackPanel" )
+export const TileGlassPanel = () => new TileGeneric( "TileGlassPanel" )
+export const TileCatwalk = () => new TileGeneric( "TileCatwalk", -22 )
+export const TileLadder = () => new TileGeneric( "TileLadder" )

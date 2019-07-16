@@ -8,20 +8,32 @@ import assemble from "../vm/assemble"
 
 export class TileBot extends TileMoving {
     vm!: VM
-
-    _dx!: number
-    get dx() { return this._dx }
-    set dx( x: number ) { this._dx = x }
+    direction = 1
 
     static create() {
         let result = new TileBot()
-        result.dx = 0
 
         let source = `
-            loop:
-            OUT 0 1
-            OUT 0 -1
-            JF 0 loop
+            loop0:
+                IN 0 R0
+                JT R0 continue
+
+                    MOV 5 R1
+                    loop1:
+                        SUB R1 1 R1
+                        EQ R1 0 R2
+                        OUT 0 1
+                        JF R2 loop1
+
+                    MOV 5 R1
+                    loop2:
+                        SUB R1 1 R1
+                        EQ R1 0 R2
+                        OUT 0 -1
+                        JF R2 loop2
+
+                continue:
+                JF 0 loop0
         `
 
         let vm = VM.create( assemble( source ), 1024, 16 )
@@ -33,26 +45,42 @@ export class TileBot extends TileMoving {
 
     on( port: number, message: number ) {
         switch ( port ) {
-            case 0: this.dx = message
+            case 0: this.drive( message )
         }
     }
 
     in( port: number ) {
+        let { world, x, y } = this
         switch ( port ) {
-            case 0: return 0
+            case 0: return world.isEmpty( x, y + 1 ) ? 1 : 0
         }
         return 0
     }
 
-    drawInternal( world: World, x, y, partialSteps ) {
+    drive( dx: number ) {
+        this.direction = Math.sign( dx )
+        this.move( this.direction, 0 )
+    }
+
+    drawInternal( partialSteps ) {
+        let { world, x, y } = this
         let sheet = getImage( "TileBotSheet" )
         let time = world.time + partialSteps
         let frame = ( time / 3 ) % 1 >= 0.5 ? 1 : 0
-        Canvas.imageAt( sheet, 0, 0, 0, frame * Tile.width, Tile.width, Tile.width )
+
+        let { push, pop, translate, scale, imageAt } = Canvas
+        push()
+        if ( this.direction == -1 ) {
+            scale( -1, 1 )
+            translate( -Tile.width, 0 )
+        }
+        imageAt( sheet, 0, 0, 0, frame * Tile.width, Tile.width, Tile.width )
+        pop()
     }
 
-    update( world: World, x, y ) {
-        super.update( world, x, y )
+    update() {
+        super.update()
+        this.move( 0, 1 )
         if ( this.vm.running() )
             this.vm.step()
     }
