@@ -38,10 +38,10 @@ RegisterRef
 	= "R" id: Integer { return { type: "RegisterRef", id } }
    
 Identifier
-	= text:$([a-zA-Z]+) ![a-zA-Z] { return text } 
+	= text:$([a-zA-Z] [a-zA-Z0-9]*) ![a-zA-Z0-9] { return text } 
     
 UpperIdentifier
-	= text:$([A-Z]+) ![a-zA-Z] { return text }
+	= text:$([A-Z] [A-Z0-9]*) ![a-zA-Z0-9] { return text }
     
 Number
 	= Float / Integer
