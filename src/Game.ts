@@ -27,15 +27,15 @@ export default class Game {
     update() {
         this.draw()
 
-        let t = performance.now()
-        let factor = 240 * this.framesPerStep / 2
-        this.time = Math.floor( ( Math.sin( t / factor * 0.25 ) + 1 ) * factor )
+        // let t = performance.now()
+        // let factor = 240 * this.framesPerStep / 2
+        // this.time = Math.floor( ( Math.sin( t / factor * 0.25 ) + 1 ) * factor )
 
         // this.time += this.timeDir
         // if ( this.time <= 0 || this.time >= 24 * this.framesPerStep )
         //     this.timeDir *= -1
 
-        // this.time += this.timeDir
+        this.time += this.timeDir
 
         let step = Math.floor( this.time / this.framesPerStep )
         this.timeline.gotoTime( step )

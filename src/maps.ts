@@ -45,7 +45,7 @@ export function map0() {
         world.setTile( 3, y, TileLadder )
     }
 
-    world.setTile( 5, 1, new TileBot() )
+    world.setTile( 5, 1, TileBot.create() )
 
     return world
 }

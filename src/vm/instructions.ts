@@ -3,22 +3,22 @@ import VM from "./VM"
 type Instruction = ( ( vm: VM ) => void ) & { code: number }
 
 function unary( vm: VM, ev ) {
-    vm.setRef( ev( vm.getRef() ) )
+    vm.setArg( ev( vm.getArg() ) )
 }
 
 function binary( vm: VM, ev ) {
-    vm.setRef( ev( vm.getRef(), vm.getRef() ) )
+    vm.setArg( ev( vm.getArg(), vm.getArg() ) )
 }
 
 function conditionalJump( vm: VM, expected: number ) {
-    let condition = vm.getRef()
-    let address = vm.getRef()
+    let condition = vm.getArg()
+    let address = vm.getArg()
     if ( condition == expected )
         vm.counter = address
 }
 
 const Instructions = {
-    MOV( vm: VM ) { vm.setRef( vm.getRef() ) },
+    MOV( vm: VM ) { vm.setArg( vm.getArg() ) },
     JT( vm: VM ) { conditionalJump( vm, 1 ) },
     JF( vm: VM ) { conditionalJump( vm, 0 ) },
     NOT( vm: VM ) { unary( vm, x => x == 0 ? 1 : 0 ) },
@@ -34,13 +34,19 @@ const Instructions = {
     DIV( vm: VM ) { binary( vm, ( x, y ) => x / y ) },
     AND( vm: VM ) { binary( vm, ( x, y ) => x & y ) },
     OR( vm: VM ) { binary( vm, ( x, y ) => x | y ) },
-    PRINT( vm: VM ) { console.log( vm.getRef() ) },
+    PRINT( vm: VM ) { console.log( vm.getArg() ) },
     OUT( vm: VM ) {
-        let listener = vm.listeners[ vm.getRef() ]
-        if ( listener ) {
-            let callback = listener.callback.bind( listener.obj )
-            callback( vm.getRef() )
-        }
+        let port = vm.getArg()
+        let message = vm.getArg()
+        if ( vm.peripheral )
+            vm.peripheral.on( port, message )
+    },
+    IN( vm: VM ) {
+        let port = vm.getArg()
+        let result = 0
+        if ( vm.peripheral )
+            result = vm.peripheral.in( port )
+        vm.setArg( result )
     }
 }
 
@@ -52,5 +58,5 @@ for ( let name in Instructions ) {
     instructions[ code ] = func
 }
 
-export function getInstruction( code: number ) { return instructions[ code ] as Instruction }
 export default ( Instructions as unknown ) as { [ name: string ]: Instruction }
+export function getInstruction( code: number ) { return instructions[ code ] }

@@ -8,22 +8,22 @@ export enum ArgType {
     PRIMITIVE
 }
 
-type Listener = { obj: any, callback: ( number ) => void }
+type Peripheral = { on: ( port: number, message: number ) => void, in: ( port: number ) => number }
 
 export default class VM {
-    counter: number = 0
-    counters: number[] = []
+    counter!: number
     program!: number[]
     memory!: number[]
     registers!: number[]
-    listeners!: Listener[]
+    peripheral!: Peripheral | null
 
     static create( program: any[], memory: number, registers: number ) {
         let result = new VM()
+        result.counter = 0
         result.program = program
         result.memory = new Array( memory ).fill( 0 )
         result.registers = new Array( registers ).fill( 0 )
-        result.listeners = []
+        result.peripheral = null
         return result
     }
 
@@ -31,7 +31,7 @@ export default class VM {
         return this.program[ this.counter++ ]
     }
 
-    getRef() {
+    getArg() {
         let rvalType = this.consume()
         switch ( rvalType ) {
             case ArgType.MEM_FIXED: {
@@ -63,7 +63,7 @@ export default class VM {
         }
     }
 
-    setRef( x: number ) {
+    setArg( x: number ) {
         let lvalType = this.consume()
         switch ( lvalType ) {
             case ArgType.MEM_FIXED: {
@@ -96,21 +96,24 @@ export default class VM {
         }
     }
 
-    step(): boolean {
+    step() {
         let instructionCode = this.consume()
         let instruction = getInstruction( instructionCode )
         if ( instruction )
             instruction( this )
         else
             throw new Error( `Unknown instruction code ${instructionCode} at ${this.counter - 1}` )
+    }
+
+    running(): boolean {
         return this.counter < this.program.length
     }
 
     run() {
-        while ( this.step() ) { }
+        while ( this.running() ) { this.step() }
     }
 
-    listen( port: number, obj: any, callback: ( number ) => void ) {
-        this.listeners[ port ] = { obj, callback }
+    addPeripheral( peripheral: Peripheral ) {
+        this.peripheral = peripheral
     }
 }
