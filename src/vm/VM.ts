@@ -1,4 +1,4 @@
-import { instructionByCode } from "./instructions";
+import { getInstruction } from "./instructions";
 
 export enum ArgType {
     MEM_FIXED,
@@ -8,13 +8,15 @@ export enum ArgType {
     PRIMITIVE
 }
 
+type Listener = { obj: any, callback: ( number ) => void }
+
 export default class VM {
     counter: number = 0
     counters: number[] = []
     program!: number[]
     memory!: number[]
     registers!: number[]
-    listeners!: ( ( number ) => void )[]
+    listeners!: Listener[]
 
     static create( program: any[], memory: number, registers: number ) {
         let result = new VM()
@@ -96,7 +98,7 @@ export default class VM {
 
     step(): boolean {
         let instructionCode = this.consume()
-        let instruction = instructionByCode( instructionCode )
+        let instruction = getInstruction( instructionCode )
         if ( instruction )
             instruction( this )
         else
@@ -108,7 +110,7 @@ export default class VM {
         while ( this.step() ) { }
     }
 
-    listen( port: number, listener: ( number ) => void ) {
-        this.listeners[ port ] = listener
+    listen( port: number, obj: any, callback: ( number ) => void ) {
+        this.listeners[ port ] = { obj, callback }
     }
 }

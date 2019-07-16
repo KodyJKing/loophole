@@ -1,19 +1,18 @@
 import { parse } from "./assemblyParser"
 import { ArgType } from "./VM";
-import { instructionByName } from "./instructions";
+import Instructions from "./Instructions";
 
 export default function assemble( source: string ) {
     let lines = parse( source ) as any[]
-    // console.log( JSON.stringify( lines, null, 2 ) )
     let result: number[] = []
     let lineNum = 0
     let labels: { [ name: string ]: number } = {}
 
     function addInstruction( line ) {
-        let instruction = instructionByName( line.instruction )
+        let instruction = Instructions[ line.instruction ]
         if ( !instruction )
             throw new Error( `Unknown instruction ${line.instruction} at line ${lineNum}.` )
-        result.push( ( instruction as any ).code )
+        result.push( instruction.code )
 
         for ( let argument of line.arguments ) {
             switch ( argument.type ) {

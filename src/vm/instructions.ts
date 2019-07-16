@@ -1,19 +1,6 @@
-import VM from "./VM";
+import VM from "./VM"
 
-let instructions: Instruction[] = []
-let instructionsMap = {}
-
-type Instruction = ( vm: VM ) => void & { code: number }
-
-function register( func ) {
-    let code = instructions.length
-    func.code = code
-    instructions[ code ] = func
-    instructionsMap[ func.name ] = func
-}
-
-export function instructionByCode( code: number ) { return instructions[ code ] as Instruction }
-export function instructionByName( name: string ) { return instructionsMap[ name ] as Instruction }
+type Instruction = ( ( vm: VM ) => void ) & { code: number }
 
 function unary( vm: VM, ev ) {
     vm.setRef( ev( vm.getRef() ) )
@@ -50,10 +37,20 @@ const Instructions = {
     PRINT( vm: VM ) { console.log( vm.getRef() ) },
     OUT( vm: VM ) {
         let listener = vm.listeners[ vm.getRef() ]
-        if ( listener )
-            listener( vm.getRef() )
+        if ( listener ) {
+            let callback = listener.callback.bind( listener.obj )
+            callback( vm.getRef() )
+        }
     }
 }
 
-for ( let name in Instructions )
-    register( Instructions[ name ] )
+let instructions: Instruction[] = []
+for ( let name in Instructions ) {
+    let func = Instructions[ name ]
+    let code = instructions.length
+    func.code = code
+    instructions[ code ] = func
+}
+
+export function getInstruction( code: number ) { return instructions[ code ] as Instruction }
+export default ( Instructions as unknown ) as { [ name: string ]: Instruction }

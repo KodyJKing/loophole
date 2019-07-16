@@ -1,6 +1,6 @@
 import test from "ava"
-import VM, { ArgType } from "./VM";
-import assemble from "./assemble";
+import VM from "./VM"
+import assemble from "./assemble"
 
 test( "Assembler", t => {
     let source = `
@@ -13,7 +13,7 @@ test( "Assembler", t => {
     `
     let program = assemble( source )
     let vm = VM.create( program, 1024, 8 )
-    vm.listen( 0, x => console.log( x ) )
+    vm.listen( 0, null, x => console.log( x ) )
     vm.run()
     t.pass()
 } )
