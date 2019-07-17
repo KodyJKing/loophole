@@ -1,5 +1,5 @@
 import World, { TileLayers } from "./World"
-import { TilePanel, TileBackPanel, TileGlassPanel, TileCatwalk, TileLadder, TileRail, TileCrate } from "./tiles/Tiles"
+import { TilePanel, TileBackPanel, TileGlassPanel, TileCatwalk, TileLadder, TileRail, TileCrate, TileThruster } from "./tiles/Tiles"
 import TileMover from "./tiles/TileMover"
 import { forRect } from "./common"
 import { EntityBot } from "./entities/EntityBot"
@@ -47,6 +47,14 @@ export function map0() {
     world.setTile( 8, 10, TileCrate() )
     world.setTile( 8, 11, TileCrate() )
     world.setTile( 8, 12, TileCrate() )
+
+    // for ( let y = 0; y < 3; y++ ) {
+    //     world.setTile( 0, y, TileThruster() )
+    //     world.setTile( 1, y, TileThruster() )
+    //     world.remove( 0, y, TileLayers.background )
+    //     world.remove( 1, y, TileLayers.background )
+    // }
+
 
     return world
 }

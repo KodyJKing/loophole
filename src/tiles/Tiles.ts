@@ -14,10 +14,11 @@ export class TileGeneric extends Tile {
         let { imageAt } = Canvas
         if ( !image ) return
         let imageWidth = image.width / Tile.width
+        let imageHeight = image.height / Tile.width
         if ( imageWidth != 1 )
             console.log( "Image width: " + imageWidth )
         let dx = x % imageWidth
-        let dy = y % imageWidth
+        let dy = y % imageHeight
         imageAt(
             image,
             0, 0,
@@ -34,3 +35,4 @@ export const TileCatwalk = () => new TileGeneric( "TileCatwalk" )
 export const TileRail = () => new TileGeneric( "TileRail" )
 export const TileLadder = () => new TileGeneric( "TileLadder" )
 export const TileCrate = () => new TileGeneric( "TileCrate" )
+export const TileThruster = () => new TileGeneric( "TileThruster" )
