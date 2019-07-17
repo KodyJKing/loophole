@@ -24,6 +24,11 @@ export default class Entity {
         this.y += dy
     }
 
+    onGround() {
+        let { world, x, y } = this
+        return !world.isEmpty( x, y + 1 )
+    }
+
     update() {
         this.dx = 0
         this.dy = 0

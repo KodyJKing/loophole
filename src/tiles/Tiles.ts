@@ -1,6 +1,7 @@
 import Tile from "./Tile"
 import { getImage } from "../common"
 import Canvas from "../Canvas";
+import World from "../World";
 
 export class TileGeneric extends Tile {
     name: string
@@ -8,10 +9,10 @@ export class TileGeneric extends Tile {
         super()
         this.name = name
     }
-    get image(): HTMLImageElement | undefined { return getImage( this.name ) }
-    draw( partialSteps ) {
-        let { x, y, image } = this
+    image( world: World, x, y, partialSteps ): HTMLImageElement | undefined { return getImage( this.name ) }
+    draw( world: World, x, y, partialSteps ) {
         let { imageAt } = Canvas
+        let image = this.image( world, x, y, partialSteps )
         if ( !image ) return
         let imageWidth = image.width / Tile.width
         let imageHeight = image.height / Tile.width

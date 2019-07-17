@@ -51,12 +51,14 @@ export class EntityBot extends Entity {
     in( port: number ) {
         let { world, x, y } = this
         switch ( port ) {
-            case 0: return world.isEmpty( x, y + 1 ) ? 1 : 0
+            case 0: return this.onGround() ? 0 : 1
         }
         return 0
     }
 
     drive( dx: number ) {
+        if ( !this.onGround() )
+            return
         let { world, x, y } = this
         this.direction = Math.sign( dx )
         let dy = world.isEmpty( x + this.direction, y ) ? 0 : -1
@@ -82,7 +84,8 @@ export class EntityBot extends Entity {
     update() {
         super.update()
         this.move( 0, 1 )
-        if ( this.vm.running() )
-            this.vm.step()
+        for ( let i = 0; i < 5; i++ )
+            if ( this.vm.running() )
+                this.vm.step()
     }
 }

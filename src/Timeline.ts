@@ -1,3 +1,5 @@
+// import { TileGeneric } from "./tiles/Tiles";
+
 function isValueType( object ) {
     return typeof object != "object" || object === null
 }
@@ -6,32 +8,49 @@ function clone( cur, prev: any = undefined, cloned = new Map() ) {
     if ( isValueType( cur ) )
         return cur
 
-    let unchanged = cur.$static === true || cur.$dirty === false
-    if ( unchanged && prev != undefined )
-        return prev
+    // let unchanged = ( cur.$static === true ) || ( cur.$dirty === false )
+    // if ( unchanged && prev != undefined ) {
+    //     // console.log( "Clean, don't copy " + prev.constructor.name )
+    //     return prev
+    // }
 
-    if ( cloned.has( cur ) )
+    if ( cloned.has( cur ) ) {
+        // console.log( "Already copied or copying " + cur.constructor.name )
         return cloned.get( cur )
+    }
 
     let result = new cur.constructor()
+    let deepEqual = ( prev != undefined )
     cloned.set( cur, result )
-    for ( let key in cur ) {
-        if ( key == "$dirty" ) continue
+    for ( let key of Object.keys( cur ) ) {
+        // if ( key == "$dirty" ) continue
         let curVal = cur[ key ]
         let prevVal = prev ? prev[ key ] : undefined
-        result[ key ] = clone( curVal, prevVal, cloned )
+        let clonedVal = clone( curVal, prevVal, cloned )
+        result[ key ] = clonedVal
+        if ( clonedVal != prevVal ) {
+            deepEqual = false
+            // if ( cur instanceof TileGeneric ) {
+            //     console.log( "TileGeneric has changed " + key )
+            // }
+        }
+    }
+
+    if ( deepEqual ) {
+        // console.log( "Discovered deep equality, disgard copy of " + cur.constructor.name )
+        return prev
     }
 
     return result
 }
 
-export function markStatic( object ) {
-    object.$static = true
-}
+// export function markStatic( object ) {
+//     object.$static = true
+// }
 
-export function markDirty( object, value ) {
-    object.$dirty = value
-}
+// export function markDirty( object, value ) {
+//     object.$dirty = value
+// }
 
 export default class Timeline {
     state: any
@@ -44,7 +63,7 @@ export default class Timeline {
         this.state = state
         this.snapshots = [ clone( state ) ]
         this.time = 0
-        this.snapshotInterval = 5
+        this.snapshotInterval = 100
         this.update = update
     }
 

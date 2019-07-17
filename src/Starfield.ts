@@ -1,4 +1,4 @@
-import { markStatic } from "./Timeline";
+// import { markStatic } from "./Timeline";
 import { modulus } from "./common";
 import Canvas from "./Canvas";
 
@@ -20,7 +20,7 @@ export default class Starfield {
 
     static create() {
         let result = new Starfield()
-        markStatic( result )
+        // markStatic( result )
         result.stars = []
         for ( let i = 0; i < 1000; i++ ) {
             // The cross section of the viewing frustum grows quadratically with z.

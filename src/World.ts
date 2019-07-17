@@ -63,9 +63,6 @@ export default class World {
         let tiles = this.layers[ layer ]
         if ( this.inBounds( x, y ) ) {
             tiles[ this.index( x, y ) ] = tile
-            tile.world = this
-            tile.x = x
-            tile.y = y
         }
     }
 
@@ -120,7 +117,7 @@ export default class World {
                 let tile = this.getTile( x, y, layer )
                 if ( tile ) {
                     push().translate( x * Tile.width, y * Tile.width )
-                    tile.draw( partialSteps )
+                    tile.draw( this, x, y, partialSteps )
                     pop()
                 }
             }
@@ -141,8 +138,8 @@ export default class World {
         for ( let y = 0; y < this.height; y++ ) {
             for ( let x = 0; x < this.width; x++ ) {
                 let tile = this.getTile( x, y )
-                if ( tile && tile.lastUpdated != this.time )
-                    tile.update()
+                if ( tile )
+                    tile.update( this, x, y )
             }
         }
 

@@ -1,6 +1,5 @@
 import World, { TileLayers } from "./World"
 import { TilePanel, TileBackPanel, TileGlassPanel, TileCatwalk, TileLadder, TileRail, TileCrate, TileThruster } from "./tiles/Tiles"
-import TileMover from "./tiles/TileMover"
 import { forRect } from "./common"
 import { EntityBot } from "./entities/EntityBot"
 
