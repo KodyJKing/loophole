@@ -1,9 +1,19 @@
 import Canvas from "./Canvas";
 import Tile from "./tiles/Tile";
 import Starfield from "./Starfield";
+import Entity from "./entities/Entity";
+
+type TileLayer = ( Tile | null )[]
+
+export enum TileLayers {
+    background,
+    center,
+    foreground
+}
 
 export default class World {
-    tiles!: ( Tile | null )[]
+    layers!: TileLayer[]
+    entities!: Entity[]
     backgroundTiles!: ( Tile | null )[]
 
     width!: number
@@ -15,8 +25,13 @@ export default class World {
         let result = new World()
         result.width = width
         result.height = height
-        result.tiles = new Array( width * height )
+        result.layers = [
+            new Array( width * height ),
+            new Array( width * height ),
+            new Array( width * height )
+        ]
         result.backgroundTiles = new Array( width * height )
+        result.entities = []
         result.stars = Starfield.create()
         return result
     }
@@ -37,15 +52,15 @@ export default class World {
         return y * this.width + x
     }
 
-    getTile( x, y, background = false ) {
-        let tiles = background ? this.backgroundTiles : this.tiles
+    getTile( x, y, layer = TileLayers.center ) {
+        let tiles = this.layers[ layer ]
         if ( this.inBounds( x, y ) )
             return tiles[ this.index( x, y ) ]
         return null
     }
 
-    setTile( x, y, tile: Tile, background = false ) {
-        let tiles = background ? this.backgroundTiles : this.tiles
+    setTile( x, y, tile: Tile, layer = TileLayers.center ) {
+        let tiles = this.layers[ layer ]
         if ( this.inBounds( x, y ) ) {
             tiles[ this.index( x, y ) ] = tile
             tile.world = this
@@ -54,47 +69,71 @@ export default class World {
         }
     }
 
-    remove( x, y, background = false ) {
-        let tiles = background ? this.backgroundTiles : this.tiles
+    remove( x, y, layer = TileLayers.center ) {
+        let tiles = this.layers[ layer ]
         tiles[ this.index( x, y ) ] = null
     }
 
-    isEmpty( x, y, background = false ) {
-        return this.getTile( x, y, background ) == null
+    isEmpty( x, y, layer = TileLayers.center ) {
+        return this.getTile( x, y, layer ) == null
+    }
+
+    addEntity( entity: Entity, x, y ) {
+        this.entities.push( entity )
+        entity.world = this
+        entity.x = x
+        entity.y = y
+    }
+
+    removeEntity( entity: Entity ) {
+        let index = this.entities.indexOf( entity )
+        if ( index > -1 ) {
+            this.entities[ index ] = this.entities[ this.entities.length - 1 ]
+            this.entities.pop()
+        }
     }
 
     draw( partialSteps ) {
-        let { canvas, context: c, push, pop, background } = Canvas
+        let { canvas, context: c, push, pop, background, scale } = Canvas
         let { width, height } = canvas
+
         // background( "#0a0311" )
         background( "#151729" )
         // background( "#434da1" )
-        this.stars.draw( this.time + partialSteps )
-        push().translate( width / 2, height / 2 )
-        this.drawTiles( partialSteps, true )
-        this.drawTiles( partialSteps )
-        pop()
 
+        this.stars.draw( this.time + partialSteps )
+
+        const zoom = 4
+        let { pixelWidth, pixelHeight } = this
+        push().translate( width / 2, height / 2 ).scale( zoom, zoom ).translate( - pixelWidth / 2, - pixelHeight / 2 )
+        this.drawTiles( partialSteps, TileLayers.background )
+        this.drawTiles( partialSteps, TileLayers.center )
+        this.drawEntities( partialSteps )
+        this.drawTiles( partialSteps, TileLayers.foreground )
+        pop()
     }
 
-    drawTiles( partialSteps, background = false ) {
-        const zoom = 4
-
+    drawTiles( partialSteps, layer = TileLayers.center ) {
         let { push, pop } = Canvas
-        let { pixelWidth, pixelHeight } = this
-
-        push().scale( zoom, zoom ).translate( - pixelWidth / 2, - pixelHeight / 2 )
         for ( let y = 0; y < this.height; y++ ) {
             for ( let x = 0; x < this.width; x++ ) {
-                let tile = this.getTile( x, y, background )
+                let tile = this.getTile( x, y, layer )
                 if ( tile ) {
-                    push().translate( x * 32, y * 32 )
+                    push().translate( x * Tile.width, y * Tile.width )
                     tile.draw( partialSteps )
                     pop()
                 }
             }
         }
-        pop()
+    }
+
+    drawEntities( partialSteps ) {
+        let { push, pop } = Canvas
+        for ( let entity of this.entities ) {
+            push().translate( entity.x * Tile.width, entity.y * Tile.width )
+            entity.draw( partialSteps )
+            pop()
+        }
     }
 
     update() {
@@ -102,11 +141,12 @@ export default class World {
         for ( let y = 0; y < this.height; y++ ) {
             for ( let x = 0; x < this.width; x++ ) {
                 let tile = this.getTile( x, y )
-                if ( tile && tile.lastUpdated != this.time ) {
+                if ( tile && tile.lastUpdated != this.time )
                     tile.update()
-                    tile.lastUpdated = this.time
-                }
             }
         }
+
+        for ( let entity of this.entities )
+            entity.update()
     }
 }

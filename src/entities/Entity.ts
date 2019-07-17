@@ -1,8 +1,12 @@
-import World from "../World";
-import Canvas from "../Canvas";
-import Tile from "./Tile";
+import World from "../World"
+import Canvas from "../Canvas"
+import { getImage } from "../common"
+import Tile from "../tiles/Tile"
 
-export default class TileMoving extends Tile {
+export default class Entity {
+    world!: World
+    x = 0
+    y = 0
     dx = 0
     dy = 0
 
@@ -16,12 +20,11 @@ export default class TileMoving extends Tile {
         if ( blocked || blockedXY ) dy = 0
         this.dx += dx
         this.dy += dy
-        world.remove( x, y )
-        world.setTile( x + dx, y + dy, this )
+        this.x += dx
+        this.y += dy
     }
 
     update() {
-        super.update()
         this.dx = 0
         this.dy = 0
     }
@@ -33,6 +36,8 @@ export default class TileMoving extends Tile {
     }
 
     drawAfterTranslation( partialSteps ) {
-        super.draw( partialSteps )
+        Canvas.image( this.image )
     }
+
+    get image(): HTMLImageElement | undefined { return getImage( this.constructor.name ) }
 }

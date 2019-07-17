@@ -1,17 +1,16 @@
 import Canvas from "../Canvas"
-import World from "../World"
-import Tile from "./Tile"
-import TileMoving from "./TileMoving"
 import { getImage } from "../common"
 import VM from "../vm/VM"
 import assemble from "../vm/assemble"
+import Entity from "./Entity"
+import Tile from "../tiles/Tile";
 
-export class TileBot extends TileMoving {
+export class EntityBot extends Entity {
     vm!: VM
     direction = 1
 
     static create() {
-        let result = new TileBot()
+        let result = new EntityBot()
 
         let source = `
             loop0:
@@ -37,7 +36,7 @@ export class TileBot extends TileMoving {
         `
 
         let vm = VM.create( assemble( source ), 1024, 16 )
-        vm.addPeripheral( result )
+        vm.setIO( result )
         result.vm = vm
 
         return result
@@ -58,13 +57,15 @@ export class TileBot extends TileMoving {
     }
 
     drive( dx: number ) {
+        let { world, x, y } = this
         this.direction = Math.sign( dx )
-        this.move( this.direction, 0 )
+        let dy = world.isEmpty( x + this.direction, y ) ? 0 : -1
+        this.move( this.direction, dy )
     }
 
-    drawInternal( partialSteps ) {
+    drawAfterTranslation( partialSteps ) {
         let { world, x, y } = this
-        let sheet = getImage( "TileBotSheet" )
+        let sheet = getImage( "EntityBot" )
         let time = world.time + partialSteps
         let frame = ( time / 3 ) % 1 >= 0.5 ? 1 : 0
 

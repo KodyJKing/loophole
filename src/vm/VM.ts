@@ -8,14 +8,14 @@ export enum ArgType {
     PRIMITIVE
 }
 
-type Peripheral = { on: ( port: number, message: number ) => void, in: ( port: number ) => number }
+type IO = { on: ( port: number, message: number ) => void, in: ( port: number ) => number }
 
 export default class VM {
     counter!: number
     program!: number[]
     memory!: number[]
     registers!: number[]
-    peripheral!: Peripheral | null
+    io!: IO | null
 
     static create( program: any[], memory: number, registers: number ) {
         let result = new VM()
@@ -23,7 +23,7 @@ export default class VM {
         result.program = program
         result.memory = new Array( memory ).fill( 0 )
         result.registers = new Array( registers ).fill( 0 )
-        result.peripheral = null
+        result.io = null
         return result
     }
 
@@ -113,7 +113,7 @@ export default class VM {
         while ( this.running() ) { this.step() }
     }
 
-    addPeripheral( peripheral: Peripheral ) {
-        this.peripheral = peripheral
+    setIO( peripheral: IO ) {
+        this.io = peripheral
     }
 }

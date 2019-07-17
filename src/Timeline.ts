@@ -44,7 +44,7 @@ export default class Timeline {
         this.state = state
         this.snapshots = [ clone( state ) ]
         this.time = 0
-        this.snapshotInterval = 100
+        this.snapshotInterval = 5
         this.update = update
     }
 

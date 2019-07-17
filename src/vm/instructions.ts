@@ -38,14 +38,14 @@ const Instructions = {
     OUT( vm: VM ) {
         let port = vm.getArg()
         let message = vm.getArg()
-        if ( vm.peripheral )
-            vm.peripheral.on( port, message )
+        if ( vm.io )
+            vm.io.on( port, message )
     },
     IN( vm: VM ) {
         let port = vm.getArg()
         let result = 0
-        if ( vm.peripheral )
-            result = vm.peripheral.in( port )
+        if ( vm.io )
+            result = vm.io.in( port )
         vm.setArg( result )
     }
 }

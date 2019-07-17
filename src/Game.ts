@@ -28,11 +28,11 @@ export default class Game {
         this.draw()
 
         let t = performance.now()
-        let factor = 100 * this.framesPerStep / 2
+        let factor = 30 * this.framesPerStep / 2
         this.time = Math.floor( ( Math.sin( t / factor * 0.125 ) + 1 ) * factor )
 
         // this.time += this.timeDir
-        // if ( this.time <= 0 || this.time >= 24 * this.framesPerStep )
+        // if ( this.time <= 0 || this.time >= 30 * this.framesPerStep )
         //     this.timeDir *= -1
 
         // this.time += this.timeDir
