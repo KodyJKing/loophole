@@ -8,11 +8,11 @@ function clone( cur, prev: any = undefined, cloned = new Map() ) {
     if ( isValueType( cur ) )
         return cur
 
-    // let unchanged = ( cur.$static === true ) || ( cur.$dirty === false )
-    // if ( unchanged && prev != undefined ) {
-    //     // console.log( "Clean, don't copy " + prev.constructor.name )
-    //     return prev
-    // }
+    let unchanged = ( cur.$static === true ) || ( cur.$dirty === false )
+    if ( unchanged && prev != undefined ) {
+        // console.log( "Clean, don't copy " + prev.constructor.name )
+        return prev
+    }
 
     if ( cloned.has( cur ) ) {
         // console.log( "Already copied or copying " + cur.constructor.name )
@@ -44,13 +44,13 @@ function clone( cur, prev: any = undefined, cloned = new Map() ) {
     return result
 }
 
-// export function markStatic( object ) {
-//     object.$static = true
-// }
+export function markStatic( object ) {
+    object.$static = true
+}
 
-// export function markDirty( object, value ) {
-//     object.$dirty = value
-// }
+export function markDirty( object, value ) {
+    object.$dirty = value
+}
 
 export default class Timeline {
     state: any
