@@ -1,8 +1,8 @@
 import World, { TileLayers } from "./World"
-import { TilePanel, TileBackPanel, TileGlassPanel, TileCatwalk, TileLadder, TileRail, TileCrate, TileGlassPanel2x2 } from "./tiles/Tiles"
+import { TilePanel, TileBackPanel, TileGlassPanel, TileCatwalk, TileLadder, TileRail, TileCrate } from "./tiles/Tiles"
 import TileMover from "./tiles/TileMover"
 import { forRect } from "./common"
-import { EntityBot } from "./entities/EntityBot";
+import { EntityBot } from "./entities/EntityBot"
 
 export function map0() {
     let world = World.create( 23, 15 )
