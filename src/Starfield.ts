@@ -1,6 +1,6 @@
-import { markStatic } from "./Timeline";
 import { modulus } from "./common";
 import Canvas from "./Canvas";
+import { markStatic } from "./clone";
 
 class Star {
     x: number
@@ -41,10 +41,10 @@ export default class Starfield {
             x *= width
             y *= height
             x = modulus( x - ( time / ( 1 + z ) ) * 200, width )
-            let angle = ( time + phase ) * Math.PI * 2 * 0.25
             let w = 24 / ( z + 1 )
             let alpha = ( Math.cos( time + phase * Math.PI * 2 ) + 1 ) / 2
 
+            // let angle = ( time + phase ) * Math.PI * 2 * 0.25
             // push()
             //     .translate( x, y )
             //     .rotate( angle )
