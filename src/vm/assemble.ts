@@ -8,6 +8,8 @@ export default function assemble( source: string ) {
     let lineNum = 0
     let declarations: { [ name: string ]: number } = {}
 
+    // console.log( JSON.stringify( lines, null, 2 ) )
+
     function addInstruction( line ) {
         let instruction = Instructions[ line.instruction ]
         if ( !instruction )
@@ -47,35 +49,44 @@ export default function assemble( source: string ) {
                     result.push( argument.value )
                     break
 
-                case "LabelRef":
+                case "DefenitionRef":
                     result.push( ArgType.PRIMITIVE )
                     result.push( argument.name )
                     break
+
+                case "LineRef":
+                    let offsetLimeNum = argument.offset ? lineNum + argument.offset : lineNum
+                    result.push( ArgType.PRIMITIVE )
+                    result.push( "%LINE" + offsetLimeNum )
             }
         }
 
     }
 
-    function createLabel( line ) {
-        declarations[ line.name ] = result.length
-    }
-
     for ( let line of lines ) {
+        declarations[ "%LINE" + lineNum ] = result.length
         switch ( line.type ) {
             case "InstructionLine":
                 addInstruction( line )
                 break
             case "LabelLine":
-                createLabel( line )
+                declarations[ line.name ] = result.length
                 break
+            case "DefenitionLine":
+                declarations[ line.name ] = line.value.value
         }
         lineNum++
     }
 
+    // TODO: Overhaul reference replacement.
+    // Build a list of references in the first pass.
+    // Then go back and replace them.
     for ( let i = 0; i < result.length; i++ ) {
         if ( typeof result[ i ] == "string" )
             result[ i ] = declarations[ result[ i ] ]
     }
+
+    // console.log( declarations )
 
     return result as number[]
 }

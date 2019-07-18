@@ -3,7 +3,7 @@ import { getImage } from "../common"
 import VM from "../vm/VM"
 import assemble from "../vm/assemble"
 import Entity from "./Entity"
-import Tile from "../tiles/Tile";
+import Tile from "../tiles/Tile"
 
 export class EntityBot extends Entity {
     vm!: VM
@@ -13,26 +13,26 @@ export class EntityBot extends Entity {
         let result = new EntityBot()
 
         let source = `
-            loop0:
+            %DEF stepCount 10
+            %DEF drivePort 0
+            loop:
                 IN 0 R0
                 JT R0 continue
 
-                    MOV 5 R1
-                    loop1:
-                        SUB R1 1 R1
-                        EQ R1 0 R2
-                        OUT 0 1
-                        JF R2 loop1
+                MOV stepCount R1
+                    SUB R1 1 R1
+                    EQ R1 0 R2
+                    OUT drivePort 1
+                JF R2 $-3
 
-                    MOV 5 R1
-                    loop2:
-                        SUB R1 1 R1
-                        EQ R1 0 R2
-                        OUT 0 -1
-                        JF R2 loop2
-
-                continue:
-                JF 0 loop0
+                MOV stepCount R1
+                    SUB R1 1 R1
+                    EQ R1 0 R2
+                    OUT drivePort -1
+                JF R2 $-3
+                
+            continue:
+            JMP loop
         `
 
         let vm = VM.create( assemble( source ), 1024, 16 )

@@ -1,42 +1,49 @@
-Start = 
-	Lines
-
 Lines
 	= WSN head: Line tail: ("\n" WSN v: Line { return v } )* WSN { return [head].concat(tail) }
 
 Line
-	= InstructionLine / LabelLine
+	= InstructionLine / LabelLine / DefenitionLine
 
-InstructionLine
-	= WS instruction: UpperIdentifier WS args: Arguments WS { return { type: "InstructionLine",  instruction, arguments: args }  }
+		InstructionLine
+			= WS instruction: UpperIdentifier WS args: Arguments WS { return { type: "InstructionLine",  instruction, arguments: args }  }
 
-LabelLine
-	= WS name: Identifier ":" WS { return { type: "LabelLine", name } }
+		LabelLine
+			= WS name: Identifier ":" WS { return { type: "LabelLine", name } }
+
+		DefenitionLine
+			= WS "%DEF" WS name: Identifier WS value: Primitive WS { return { type: "DefenitionLine", name, value } }
     
 Arguments
 	= head: Argument tail: (WS v: Argument { return v } )* { return [head].concat(tail) }
     
-Argument
-	= MemRef / RegisterRef / LabelRef / Primitive
+		Argument
+			= RegisterRef / MemRef / Primitive / DefenitionRef / LineRef
     
-MemRef
-	= "[" WS address: (DynamicAddress / FixedAddress) WS "]" { return { type: "MemRef", address } }
+				MemRef
+					= "[" WS address: (DynamicAddress / FixedAddress) WS "]" { return { type: "MemRef", address } }
 
-FixedAddress
-	= offset: PositiveInteger { return { type: "FixedAddress", offset } }
+						FixedAddress
+							= offset: PositiveInteger { return { type: "FixedAddress", offset } }
 
-DynamicAddress
-	= register: RegisterRef WS offset: (op: ( "+" / "-" ) v: PositiveInteger { return op == "+" ? v : -	v } )? { return { type: "DynamicAddress", register, offset } }
-    
-LabelRef
-	= name: Identifier { return { type: "LabelRef", name } }
-    
-Primitive
-	= value: Number { return { type: "Primitive", value } } 
-    
-RegisterRef
-	= "R" id: Integer { return { type: "RegisterRef", id } }
-   
+						DynamicAddress
+							= register: RegisterRef WS offset: Offset? 
+								{ return { type: "DynamicAddress", register, offset } }
+					
+				RegisterRef
+					= "R" id: Integer { return { type: "RegisterRef", id } }
+
+				Primitive
+					= value: Number { return { type: "Primitive", value } } 
+
+				DefenitionRef
+					= name: Identifier { return { type: "DefenitionRef", name } }
+
+				 LineRef 
+					= "$" offset: Offset? { return { type: "LineRef", offset } }
+
+Offset
+	= op: ( "+" / "-" ) v: PositiveInteger { return op == "+" ? v : -v }
+
 Identifier
 	= text:$([a-zA-Z] [a-zA-Z0-9]*) ![a-zA-Z0-9] { return text } 
     

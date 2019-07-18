@@ -19,6 +19,7 @@ function conditionalJump( vm: VM, expected: number ) {
 
 const Instructions = {
     MOV( vm: VM ) { vm.setArg( vm.getArg() ) },
+    JMP( vm: VM ) { vm.counter = vm.getArg() },
     JT( vm: VM ) { conditionalJump( vm, 1 ) },
     JF( vm: VM ) { conditionalJump( vm, 0 ) },
     NOT( vm: VM ) { unary( vm, x => x == 0 ? 1 : 0 ) },

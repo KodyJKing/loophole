@@ -39,7 +39,7 @@ export default class VM {
                 return this.memory[ addr ]
             }
 
-            case ArgType.MEM_OFFSET: {
+            case ArgType.MEM: {
                 let register = this.consume()
                 return this.memory[ this.registers[ register ] ]
             }

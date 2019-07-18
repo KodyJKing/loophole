@@ -4,12 +4,12 @@ import assemble from "./assemble"
 
 test( "Assembler", t => {
     let source = `
-        MOV 5 R0
-        loop:
+        %DEF foo 5
+        MOV foo R0
         PRINT R0
         SUB R0 1 R0
         EQ R0 0 R1
-        JF R1 loop
+        JF R1 $-3
     `
     let program = assemble( source )
     let vm = VM.create( program, 1024, 8 )
