@@ -1,6 +1,6 @@
 import { parse } from "./assemblyParser"
-import { ArgType } from "./VM";
-import Instructions from "./Instructions";
+import { ArgType } from "./VM"
+import Instructions from "./Instructions"
 
 export default function assemble( source: string ) {
     let lines = parse( source ) as any[]

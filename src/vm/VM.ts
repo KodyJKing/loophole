@@ -1,4 +1,5 @@
-import { getInstruction } from "./instructions";
+import { getInstruction } from "./Instructions";
+import assemble from "./assemble";
 
 export enum ArgType {
     MEM_FIXED,
@@ -8,6 +9,13 @@ export enum ArgType {
     PRIMITIVE
 }
 
+export enum Registers {
+    ax, bx, cx, dx, ex, fx, gx, hx,
+    res, stp, stb
+}
+
+const registerCount = Object.keys( Registers ).length / 2
+
 type IO = { on: ( port: number, message: number ) => void, in: ( port: number ) => number }
 
 export default class VM {
@@ -15,16 +23,26 @@ export default class VM {
     program!: number[]
     memory!: number[]
     registers!: number[]
-    io!: IO | null
+    io!: IO | undefined
 
-    static create( program: any[], memory: number, registers: number ) {
+    static create( source: string, memory: number, io?: IO ) {
         let result = new VM()
         result.counter = 0
-        result.program = program
+        result.program = assemble( source )
         result.memory = new Array( memory ).fill( 0 )
-        result.registers = new Array( registers ).fill( 0 )
-        result.io = null
+        result.registers = new Array( registerCount ).fill( 0 )
+        result.io = io
         return result
+    }
+
+    push( x ) {
+        let address = this.registers[ Registers.stp ]++
+        this.memory[ address ] = x
+    }
+
+    pop() {
+        let address = --this.registers[ Registers.stp ]
+        return this.memory[ address ]
     }
 
     consume() {
@@ -97,6 +115,8 @@ export default class VM {
     }
 
     step() {
+        if ( !this.running() )
+            return
         let instructionCode = this.consume()
         let instruction = getInstruction( instructionCode )
         if ( instruction )
@@ -111,9 +131,5 @@ export default class VM {
 
     run() {
         while ( this.running() ) { this.step() }
-    }
-
-    setIO( peripheral: IO ) {
-        this.io = peripheral
     }
 }

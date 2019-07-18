@@ -8,9 +8,10 @@
         "dev": "yarn install && yarn build",
         "build": "tsc && yarn buildPeg",
         "watch": "tsc -w",
-        "buildPeg": "pegjs -o src/vm/assemblyParser.js src/vm/assemblyParser.pegjs",
-        "watchPeg": "nodemon --watch src/vm -e pegjs -x yarn buildPeg",
+        "buildpeg": "pegjs -o src/vm/assemblyParser.js src/vm/assemblyParser.pegjs",
+        "watchpeg": "nodemon --watch src/vm -e pegjs -x yarn buildpeg",
         "webpack": "webpack-dev-server",
+        "watchall": "node watchall.js",
         "test": "ava --watch --verbose"
     },
     "private": true,

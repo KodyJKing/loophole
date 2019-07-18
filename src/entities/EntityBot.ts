@@ -1,42 +1,48 @@
 import Canvas from "../Canvas"
 import { getImage } from "../common"
 import VM from "../vm/VM"
-import assemble from "../vm/assemble"
 import Entity from "./Entity"
 import Tile from "../tiles/Tile"
 
 export class EntityBot extends Entity {
     vm!: VM
     direction = 1
+    yield = false
 
     static create() {
         let result = new EntityBot()
 
         let source = `
-            %DEF stepCount 10
-            %DEF drivePort 0
+            #def stepcount 10
+            #def driveport 0
+            #def ongroundport 0
+
+            jmp loop
+
+            drive: // ax = drive direction, bx = distance
+                out driveport ax
+                sub bx 1 bx
+                eq bx 0 cx
+                jf cx $-3
+            end
+
             loop:
-                IN 0 R0
-                JT R0 continue
+                in ongroundport ax
+                jt ax continue
 
-                MOV stepCount R1
-                    SUB R1 1 R1
-                    EQ R1 0 R2
-                    OUT drivePort 1
-                JF R2 $-3
+                mov 1 ax
+                mov stepcount bx
+                call drive
 
-                MOV stepCount R1
-                    SUB R1 1 R1
-                    EQ R1 0 R2
-                    OUT drivePort -1
-                JF R2 $-3
-                
-            continue:
-            JMP loop
+                mov -1 ax
+                mov stepcount bx
+                call drive
+
+                continue:
+            jmp loop
         `
 
-        let vm = VM.create( assemble( source ), 1024, 16 )
-        vm.setIO( result )
+        let vm = VM.create( source, 1024, result )
         result.vm = vm
 
         return result
@@ -44,7 +50,11 @@ export class EntityBot extends Entity {
 
     on( port: number, message: number ) {
         switch ( port ) {
-            case 0: this.drive( message )
+            case 0: {
+                this.drive( message )
+                this.yield = true
+                break
+            }
         }
     }
 
@@ -84,8 +94,8 @@ export class EntityBot extends Entity {
     update() {
         super.update()
         this.move( 0, 1 )
-        for ( let i = 0; i < 5; i++ )
-            if ( this.vm.running() )
-                this.vm.step()
+        this.yield = false
+        for ( let i = 0; !this.yield && i < 10; i++ )
+            this.vm.step()
     }
 }

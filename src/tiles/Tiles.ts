@@ -16,8 +16,6 @@ export class TileGeneric extends Tile {
         if ( !image ) return
         let imageWidth = image.width / Tile.width
         let imageHeight = image.height / Tile.width
-        if ( imageWidth != 1 )
-            console.log( "Image width: " + imageWidth )
         let dx = x % imageWidth
         let dy = y % imageHeight
         imageAt(
