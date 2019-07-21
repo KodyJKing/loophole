@@ -1451,9 +1451,7 @@ function peg$parse(input, options) {
 
 
   	const Registers = require("./VM").Registers
-
   	const registerNames = Object.keys( Registers ).filter( key => Number.isNaN( parseInt( key, 10 ) ) )
-
   	function isValidRegister(name) {
   		return Registers[name] !== undefined
   	}

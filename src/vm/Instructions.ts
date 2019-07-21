@@ -3,38 +3,54 @@ import VM, { Registers } from "./VM"
 type Instruction = ( ( vm: VM ) => void ) & { code: number }
 
 function unary( vm: VM, ev ) {
-    vm.setArg( ev( vm.getArg() ) )
+    vm.setOperand( ev( vm.getOperand() ) )
 }
 
 function binary( vm: VM, ev ) {
-    vm.setArg( ev( vm.getArg(), vm.getArg() ) )
+    vm.setOperand( ev( vm.getOperand(), vm.getOperand() ) )
 }
 
 function conditionalJump( vm: VM, expected: number ) {
-    let condition = vm.getArg()
-    let address = vm.getArg()
+    let condition = vm.getOperand()
+    let address = vm.getOperand()
     if ( condition == expected )
         vm.counter = address
 }
 
 const Instructions = {
     nop( vm: VM ) { },
-    mov( vm: VM ) { vm.setArg( vm.getArg() ) },
-    jmp( vm: VM ) { vm.counter = vm.getArg() },
+    mov( vm: VM ) { vm.setOperand( vm.getOperand() ) },
+    jmp( vm: VM ) { vm.counter = vm.getOperand() },
     jt( vm: VM ) { conditionalJump( vm, 1 ) },
     jf( vm: VM ) { conditionalJump( vm, 0 ) },
-    push( vm: VM ) { vm.push( vm.getArg() ) },
-    pop( vm: VM ) { vm.setArg( vm.pop() ) },
+    loop( vm: VM ) {
+        let arg0Address = vm.counter
+        let value = vm.getOperand() - 1
+        vm.counter = arg0Address
+        vm.setOperand( value )
+        let jumpAddress = vm.getOperand()
+        if ( value != 0 )
+            vm.counter = jumpAddress
+    },
+    push( vm: VM ) { vm.push( vm.getOperand() ) },
+    pop( vm: VM ) { vm.setOperand( vm.pop() ) },
     call( vm: VM ) {
-        let jumpAddress = vm.getArg()
+        let jumpAddress = vm.getOperand()
         vm.push( vm.counter )
+        vm.push( vm.registers[ Registers.stb ] )
+        vm.registers[ Registers.stb ] = vm.registers[ Registers.stp ] - 3
         vm.counter = jumpAddress
     },
-    end( vm: VM ) { vm.counter = vm.pop() },
-    ret( vm: VM ) {
-        let result = vm.getArg()
+    end( vm: VM ) {
+        vm.registers[ Registers.stb ] = vm.pop()
         vm.counter = vm.pop()
-        vm.registers[ Registers.res ] = result
+    },
+    ret( vm: VM ) {
+        vm.registers[ Registers.stb ] = vm.pop()
+        let cleanup = vm.getOperand()
+        vm.counter = vm.pop()
+        for ( let i = 0; i < cleanup; i++ )
+            vm.pop()
     },
     not( vm: VM ) { unary( vm, x => x == 0 ? 1 : 0 ) },
     comp( vm: VM ) { unary( vm, x => ~x ) },
@@ -50,19 +66,20 @@ const Instructions = {
     and( vm: VM ) { binary( vm, ( x, y ) => x & y ) },
     or( vm: VM ) { binary( vm, ( x, y ) => x | y ) },
     out( vm: VM ) {
-        let port = vm.getArg()
-        let message = vm.getArg()
+        let port = vm.getOperand()
+        let message = vm.getOperand()
         if ( vm.io )
             vm.io.on( port, message )
     },
     in( vm: VM ) {
-        let port = vm.getArg()
+        let port = vm.getOperand()
         let result = 0
         if ( vm.io )
             result = vm.io.in( port )
-        vm.setArg( result )
+        vm.setOperand( result )
     },
-    print( vm: VM ) { console.log( vm.getArg() ) },
+    print( vm: VM ) { console.log( vm.getOperand() ) },
+    printc( vm: VM ) { console.log( String.fromCharCode( vm.getOperand() ) ) },
     debug( vm: VM ) {
         console.log( vm.registers )
         // console.log( vm.memory )

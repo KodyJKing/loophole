@@ -11,7 +11,9 @@ export enum ArgType {
 
 export enum Registers {
     ax, bx, cx, dx, ex, fx, gx, hx,
-    res, stp, stb
+    ix, jx, kx,
+    res,
+    stp, stb
 }
 
 const registerCount = Object.keys( Registers ).length / 2
@@ -42,14 +44,16 @@ export default class VM {
 
     pop() {
         let address = --this.registers[ Registers.stp ]
-        return this.memory[ address ]
+        let result = this.memory[ address ]
+        this.memory[ address ] = 0
+        return result
     }
 
     consume() {
         return this.program[ this.counter++ ]
     }
 
-    getArg() {
+    getOperand() {
         let rvalType = this.consume()
         switch ( rvalType ) {
             case ArgType.MEM_FIXED: {
@@ -81,7 +85,7 @@ export default class VM {
         }
     }
 
-    setArg( x: number ) {
+    setOperand( x: number ) {
         let lvalType = this.consume()
         switch ( lvalType ) {
             case ArgType.MEM_FIXED: {

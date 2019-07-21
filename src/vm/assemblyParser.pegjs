@@ -1,8 +1,6 @@
 {
 	const Registers = require("./VM").Registers
-
 	const registerNames = Object.keys( Registers ).filter( key => Number.isNaN( parseInt( key, 10 ) ) )
-
 	function isValidRegister(name) {
 		return Registers[name] !== undefined
 	}
@@ -54,20 +52,15 @@ Arguments
 				DefenitionRef
 					= name: Identifier { return { type: "DefenitionRef", name } }
 
-				 LineRef 
+				LineRef 
 					= "$" offset: Offset? { return { type: "LineRef", offset } }
 
 
 Offset
 	= op: ( "+" / "-" ) v: PositiveInteger { return op == "+" ? v : -v }
 
-
 Identifier
 	= text:$([a-zA-Z] [a-zA-Z0-9]*) ![a-zA-Z0-9] { return text } 
-    
-// Identifier
-// 	= text:$([A-Z] [A-Z0-9]*) ![a-zA-Z0-9] { return text }
-
     
 Number
 	= Float / Integer
@@ -77,6 +70,9 @@ Number
 			
 		Integer
 			= digits: $("-"? [0-9])+ { return parseInt(digits) }
+
+		// Char
+		// 	= "'" .
 
 		PositiveInteger
 			= digits: $([0-9]+) { return parseInt(digits) }
