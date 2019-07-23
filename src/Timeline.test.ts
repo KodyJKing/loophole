@@ -1,6 +1,6 @@
 import test from "ava"
 import Timeline from "./Timeline"
-import Vector from "./Vector";
+import Vector from "./Vector"
 
 test( "Timeline", t => {
     let v = new Vector( 10, 10 )
@@ -13,8 +13,15 @@ test( "Timeline", t => {
     for ( let i = 0; i < 100; i++ )
         timeline.step()
 
-    // console.log( timeline.state )
-    // console.log( timeline.getState( 42 ) )
+    let changed = timeline.modifyState( 10, ( state: Vector[] ) => {
+        state[ 0 ].x = -99
+    } )
 
-    t.pass()
+    t.assert( changed )
+    t.assert(
+        timeline.getState( 10 )[ 0 ].x == -99
+    )
+    t.assert(
+        timeline.getState( 11 )[ 0 ].x == -98
+    )
 } )

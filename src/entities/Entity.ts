@@ -2,6 +2,7 @@ import World from "../World"
 import Canvas from "../Canvas"
 import { getImage } from "../common"
 import Tile from "../tiles/Tile"
+import Game from "../Game";
 
 export default class Entity {
     world!: World
@@ -9,6 +10,11 @@ export default class Entity {
     y = 0
     dx = 0
     dy = 0
+
+    displacementX( partialSteps ) { return this.dx * Tile.width * ( partialSteps - 1 ) }
+    displacementY( partialSteps ) { return this.dy * Tile.width * ( partialSteps - 1 ) }
+    pixelX( partialSteps ) { return this.x * Tile.width + this.displacementX( partialSteps ) }
+    pixelY( partialSteps ) { return this.y * Tile.width + this.displacementY( partialSteps ) }
 
     move( dx, dy ) {
         let { world, x, y } = this
@@ -29,13 +35,13 @@ export default class Entity {
         return !world.isEmpty( x, y + 1 )
     }
 
-    update() {
+    update( game: Game ) {
         this.dx = 0
         this.dy = 0
     }
 
     draw( partialSteps ) {
-        Canvas.push().translate( this.dx * Tile.width * ( partialSteps - 1 ), this.dy * Tile.width * ( partialSteps - 1 ) )
+        Canvas.push().translate( this.displacementX( partialSteps ), this.displacementY( partialSteps ) )
         this.drawAfterTranslation( partialSteps )
         Canvas.pop()
     }

@@ -2,6 +2,7 @@ import Canvas from "./Canvas";
 import Tile from "./tiles/Tile";
 import Starfield from "./Starfield";
 import Entity from "./entities/Entity";
+import Game from "./Game";
 
 type TileLayer = ( Tile | null )[]
 
@@ -91,7 +92,7 @@ export default class World {
     }
 
     draw( partialSteps ) {
-        let { canvas, context: c, push, pop, background, scale } = Canvas
+        let { canvas, context: c, push, pop, background, scale, translate } = Canvas
         let { width, height } = canvas
 
         // background( "#0a0311" )
@@ -133,7 +134,7 @@ export default class World {
         }
     }
 
-    update() {
+    update( game: Game ) {
         this.time++
         for ( let y = 0; y < this.height; y++ ) {
             for ( let x = 0; x < this.width; x++ ) {
@@ -144,6 +145,6 @@ export default class World {
         }
 
         for ( let entity of this.entities )
-            entity.update()
+            entity.update( game )
     }
 }
