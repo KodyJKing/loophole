@@ -7,12 +7,12 @@ import clone from "./clone";
 export default class Game {
     timeline: Timeline
     time = 0
-    stepsPerFrame = 1 / 20
+    stepsPerFrame = 1 / 10
 
-    targetTime: number | null = null
-    get seeking() { return this.targetTime !== null }
+    // targetTime: number | null = null
+    modification: { time: number, state: World } | null = null
 
-    timeDir = 1
+    // timeDir = 1
 
     get partialSteps() {
         return this.time % 1 //( this.time % this.framesPerStep ) / this.framesPerStep
@@ -30,9 +30,9 @@ export default class Game {
     update() {
         this.draw()
 
-        let t = performance.now()
-        let factor = 10 / this.stepsPerFrame / 2
-        this.time = Math.floor( ( Math.sin( t / factor * 1 / 16 ) + 1 ) * factor )
+        // let t = performance.now()
+        // let factor = 10 / this.stepsPerFrame / 2
+        // this.time = Math.floor( ( Math.sin( t / factor * 1 / 16 ) + 1 ) * factor )
 
         // this.time += this.timeDir * this.stepsPerFrame
         // if ( this.time <= 0 || this.time >= 10 )
@@ -41,16 +41,19 @@ export default class Game {
 
         // this.time += this.timeDir * this.stepsPerFrame
 
-        // if ( this.targetTime !== null ) {
-        //     if ( this.time == this.targetTime )
-        //         this.targetTime = null
-        //     else {
-        //         let timeDir = Math.sign( this.targetTime - this.time )
-        //         this.time = Math.max( 0, this.time + 4 * timeDir )
-        //     }
-        // } else {
-        //     this.time++
-        // }
+        if ( this.modification !== null ) {
+            if ( Math.floor( this.time ) == this.modification.time ) {
+                console.log( "TODO APPLY MODIFICATION" )
+                this.timeline.applyModification( this.modification.time, this.modification.state )
+                this.modification = null
+            }
+            else {
+                let timeDir = Math.sign( this.modification.time - this.time )
+                this.time = Math.max( 0, this.time + 5 * timeDir * this.stepsPerFrame )
+            }
+        } else {
+            this.time += this.stepsPerFrame
+        }
 
         let step = Math.floor( this.time )
         this.timeline.gotoTime( step )
@@ -63,8 +66,6 @@ export default class Game {
     }
 
     modifyTime( time: number, applyChanges: ( world: World ) => void ) {
-        let changed = this.timeline.modifyState( time, applyChanges )
-        if ( changed )
-            this.time = time
+        this.modification = this.timeline.getModifiedState( time, applyChanges )
     }
 }

@@ -74,19 +74,25 @@ export default class Timeline {
         // console.log( "Snapshot count: " + this.snapshots.length )
     }
 
-    modifyState( time, applyChanges: ( any ) => void ): boolean {
+    getModifiedState( time, applyChanges: ( any ) => void ) {
         let originalState = this.getState( time )
         let modifiedState = clone( originalState )
         applyChanges( modifiedState )
         let changed = !deepCompare( originalState, modifiedState )
-        if ( changed ) {
-            this.modifications[ time ] = modifiedState
-            this.clearAfterModification( time )
-        }
-        return changed
+        return changed ? { state: modifiedState, time } : null
+        // if ( changed ) {
+        //     this.modifications[ time ] = modifiedState
+        //     this.rewindToModification( time )
+        // }
+        // return changed
     }
 
-    clearAfterModification( time ) {
+    applyModification( time, state ) {
+        this.modifications[ time ] = state
+        this.rewindToModification( time )
+    }
+
+    rewindToModification( time ) {
         for ( let key of Object.keys( this.modifications ) ) {
             let otherTime = parseInt( key, 10 )
             if ( otherTime > time )
