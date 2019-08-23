@@ -1,4 +1,4 @@
-function isValueType( object ) {
+export function isValueType( object ) {
     return typeof object != "object" || object === null
 }
 

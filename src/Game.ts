@@ -1,8 +1,8 @@
-import Canvas from "./Canvas";
+import Canvas from "./common/Canvas";
 import Timeline from "./Timeline";
 import { map0 } from "./maps";
 import World from "./World";
-import clone from "./clone";
+import clone from "./common/clone";
 
 export default class Game {
     timeline: Timeline

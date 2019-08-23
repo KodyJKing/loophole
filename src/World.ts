@@ -1,4 +1,4 @@
-import Canvas from "./Canvas";
+import Canvas from "./common/Canvas";
 import Tile from "./tiles/Tile";
 import Starfield from "./Starfield";
 import Entity from "./entities/Entity";

@@ -1,6 +1,6 @@
 import test from "ava"
 import Timeline from "./Timeline"
-import Vector from "./Vector"
+import Vector from "./common/Vector"
 
 test( "Timeline", t => {
     // let v = new Vector( 10, 10 )

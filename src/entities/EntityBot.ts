@@ -1,11 +1,11 @@
-import Canvas from "../Canvas"
-import { getImage } from "../common"
+import Canvas from "../common/Canvas"
+import { getImage } from "../common/common"
 import VM from "../vm/VM"
 import Entity from "./Entity"
 import Tile from "../tiles/Tile"
 import Game from "../Game";
 import World from "../World";
-import clone, { deepCompare } from "../clone";
+import clone, { deepCompare } from "../common/clone";
 
 export class EntityBot extends Entity {
     vm!: VM

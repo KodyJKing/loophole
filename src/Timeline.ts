@@ -1,4 +1,4 @@
-import clone, { deepCompare } from "./clone";
+import clone, { deepCompare } from "./common/clone";
 
 function maybeClone( value, doClone ) {
     return doClone ? clone( value ) : value

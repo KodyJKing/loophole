@@ -1,6 +1,6 @@
 import Tile from "./Tile"
-import { getImage } from "../common"
-import Canvas from "../Canvas";
+import { getImage } from "../common/common"
+import Canvas from "../common/Canvas";
 import World from "../World";
 
 export class TileGeneric extends Tile {
