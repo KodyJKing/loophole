@@ -2,6 +2,7 @@ import World, { TileLayers } from "./World"
 import { TilePanel, TileBackPanel, TileGlassPanel, TileCatwalk, TileLadder, TileRail, TileCrate, TileThruster } from "./tiles/Tiles"
 import { forRect } from "./common/common"
 import { EntityBot } from "./entities/EntityBot"
+import { EntityMover } from "./entities/EntityMover";
 
 export function map0() {
     let world = World.create( 23, 15 )
@@ -39,6 +40,8 @@ export function map0() {
     }
 
     world.addEntity( EntityBot.create(), 5, 12 )
+
+    world.addEntity( new EntityMover(), 1, 12 )
 
     world.setTile( 6, 12, TileCrate() )
     world.setTile( 7, 11, TileCrate() )

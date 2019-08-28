@@ -7,7 +7,8 @@ import clone from "./common/clone";
 export default class Game {
     timeline: Timeline
     time = 0
-    stepsPerFrame = 1 / 10
+    // stepsPerFrame = 1 / 10
+    stepsPerFrame = 1 / 20
 
     // targetTime: number | null = null
     modification: { time: number, state: World } | null = null
@@ -43,13 +44,13 @@ export default class Game {
 
         if ( this.modification !== null ) {
             if ( Math.floor( this.time ) == this.modification.time ) {
-                console.log( "TODO APPLY MODIFICATION" )
                 this.timeline.applyModification( this.modification.time, this.modification.state )
                 this.modification = null
             }
             else {
                 let timeDir = Math.sign( this.modification.time - this.time )
-                this.time = Math.max( 0, this.time + 5 * timeDir * this.stepsPerFrame )
+                // this.time = Math.max( 0, this.time + 5 * timeDir * this.stepsPerFrame )
+                this.time = Math.max( 0, this.time + 2 * timeDir * this.stepsPerFrame )
             }
         } else {
             this.time += this.stepsPerFrame

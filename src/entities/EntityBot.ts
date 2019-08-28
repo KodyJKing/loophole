@@ -130,7 +130,11 @@ export class EntityBot extends Entity {
             game.modifyTime(
                 time,
                 ( world: World ) => {
+                    let thisWorld = this.world;
+                    ( this as any ).world = null
                     let copy = clone( this )
+                    this.world = thisWorld
+
                     world.addEntity( copy, copy.x, copy.y )
 
                     for ( let other of world.entities ) {
