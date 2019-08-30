@@ -27,7 +27,7 @@ export class EntityBot extends Entity {
 
             drive:
                 in ongroundport bx
-                jt bx $-1
+                jf bx $-1
                 out driveport ax
                 loop ix $-4
             end
@@ -83,7 +83,7 @@ export class EntityBot extends Entity {
     in( port: number ) {
         let { world, x, y } = this
         switch ( port ) {
-            case 0: return this.onGround() ? 0 : 1
+            case 0: return this.onGround() ? 1 : 0
         }
         return 0
     }
@@ -123,31 +123,32 @@ export class EntityBot extends Entity {
     }
 
     maybeTimeTravel( game: Game ) {
-        if ( this.targetTime !== null ) {
-            let time = this.targetTime
-            this.targetTime = null
+        if ( this.targetTime == null )
+            return
 
-            game.modifyTime(
-                time,
-                ( world: World ) => {
-                    let thisWorld = this.world;
-                    ( this as any ).world = null
-                    let copy = clone( this )
-                    this.world = thisWorld
+        let time = this.targetTime
+        this.targetTime = null
 
-                    world.addEntity( copy, copy.x, copy.y )
+        game.modifyTime(
+            time,
+            ( world: World ) => {
+                let thisWorld = this.world;
+                ( this as any ).world = null
+                let copy = clone( this )
+                this.world = thisWorld
 
-                    for ( let other of world.entities ) {
-                        if ( ( copy !== other ) && deepCompare( copy, other ) ) {
-                            world.entities.pop()
-                            break
-                        }
+                world.addEntity( copy, copy.x, copy.y )
+
+                for ( let other of world.entities ) {
+                    if ( ( copy !== other ) && deepCompare( copy, other ) ) {
+                        world.entities.pop()
+                        break
                     }
-
                 }
-            )
 
-            this.world.removeEntity( this )
-        }
+            }
+        )
+
+        this.world.removeEntity( this )
     }
 }

@@ -46,8 +46,7 @@ export default class Game {
             if ( Math.floor( this.time ) == this.modification.time ) {
                 this.timeline.applyModification( this.modification.time, this.modification.state )
                 this.modification = null
-            }
-            else {
+            } else {
                 let timeDir = Math.sign( this.modification.time - this.time )
                 // this.time = Math.max( 0, this.time + 5 * timeDir * this.stepsPerFrame )
                 this.time = Math.max( 0, this.time + 2 * timeDir * this.stepsPerFrame )
