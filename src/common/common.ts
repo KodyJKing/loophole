@@ -13,7 +13,7 @@ export function forRectInclusive( x0, y0, x1, y1, action ) {
 }
 
 const cache = {}
-export function getImage( name: string, extension = "png" ) {
+export function getImage( name: string, extension = "png" ): HTMLImageElement {
     if ( cache[ name ] )
         return cache[ name ]
     let img = new Image()

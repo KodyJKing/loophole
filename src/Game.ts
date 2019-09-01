@@ -3,6 +3,7 @@ import Timeline from "./Timeline";
 import { map0 } from "./maps";
 import World from "./World";
 import clone from "./common/clone";
+import { getImage } from "./common/common";
 
 export default class Game {
     timeline: Timeline
@@ -28,6 +29,12 @@ export default class Game {
         return this.timeline.state as World
     }
 
+    get timeDir() {
+        return this.modification !== null ?
+            Math.sign( this.modification.time - this.time ) :
+            1
+    }
+
     update() {
         this.draw()
 
@@ -47,9 +54,8 @@ export default class Game {
                 this.timeline.applyModification( this.modification.time, this.modification.state )
                 this.modification = null
             } else {
-                let timeDir = Math.sign( this.modification.time - this.time )
-                // this.time = Math.max( 0, this.time + 5 * timeDir * this.stepsPerFrame )
-                this.time = Math.max( 0, this.time + 2 * timeDir * this.stepsPerFrame )
+                // let timeDir = Math.sign( this.modification.time - this.time )
+                this.time = Math.max( 0, this.time + 5 * this.timeDir * this.stepsPerFrame )
             }
         } else {
             this.time += this.stepsPerFrame
@@ -63,6 +69,16 @@ export default class Game {
         Canvas.fitWindow()
         Canvas.context.imageSmoothingEnabled = false
         this.world.draw( this.partialSteps )
+
+        if ( this.modification !== null ) {
+            let img = getImage( "GuiTimeTravelIndicator" )
+            Canvas.context.globalAlpha = 0.5
+            Canvas.translate( Canvas.canvas.width / 2, 2 * Canvas.canvas.height / 3 )
+                .scale( 4 * this.timeDir, 4 )
+                .translate( - img.width / 2, - img.height / 2 )
+                .image( getImage( "GuiTimeTravelIndicator" ), 0, 0 )
+        }
+
     }
 
     modifyTime( time: number, applyChanges: ( world: World ) => void ) {
