@@ -16,7 +16,7 @@ export default class Game {
     // timeDir = 1
 
     get partialSteps() {
-        return this.time % 1 //( this.time % this.framesPerStep ) / this.framesPerStep
+        return this.time % 1
     }
 
     constructor() {

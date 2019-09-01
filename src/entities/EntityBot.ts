@@ -13,6 +13,9 @@ export class EntityBot extends Entity {
     timeout = 0
 
     targetTime: number | null = null
+    timeTravelCountdown = 0
+    timeTravelDelay = 2
+    arivalCountdown = 0
 
     static create() {
         let result = new EntityBot()
@@ -40,14 +43,14 @@ export class EntityBot extends Entity {
                 out timetravelport 0
 
                 mov 1 ax
-                mov 10 ix
+                mov 2 ix
                 call drive
 
-                // mov 1 ax
-                // mov stepcount ix
-                // call drive
+                out timetravelport 0
 
-                // out timetravelport 15
+                mov 1 ax
+                mov 2 ix
+                call drive
 
                 // loop:
                 //     mov -1 ax
@@ -75,6 +78,8 @@ export class EntityBot extends Entity {
             }
             case 1: {
                 this.targetTime = message
+                this.timeTravelCountdown = this.timeTravelDelay
+                this.timeout = this.timeTravelDelay + 1
                 break
             }
         }
@@ -97,6 +102,16 @@ export class EntityBot extends Entity {
         this.move( this.direction, dy )
     }
 
+    alpha( partialSteps ) {
+        if ( this.targetTime == null ) {
+            let arivalCountdown = Math.max( this.arivalCountdown - partialSteps, 0 )
+            return ( 1 - arivalCountdown / this.timeTravelDelay )
+        } else {
+            let timeTravelCountdown = Math.max( this.timeTravelCountdown - partialSteps, 0 )
+            return timeTravelCountdown / this.timeTravelDelay
+        }
+    }
+
     drawAfterTranslation( partialSteps ) {
         let { world, x, y } = this
         let sheet = getImage( "EntityBot" )
@@ -109,6 +124,7 @@ export class EntityBot extends Entity {
             scale( -1, 1 )
             translate( -Tile.width, 0 )
         }
+        Canvas.context.globalAlpha = this.alpha( partialSteps )
         imageAt( sheet, 0, 0, 0, frame * Tile.width, Tile.width, Tile.width )
         pop()
     }
@@ -120,10 +136,12 @@ export class EntityBot extends Entity {
             this.vm.step()
         this.move( 0, 1 )
         this.maybeTimeTravel( game )
+        this.timeTravelCountdown--
+        this.arivalCountdown--
     }
 
     maybeTimeTravel( game: Game ) {
-        if ( this.targetTime == null )
+        if ( this.targetTime == null || this.timeTravelCountdown > 1 )
             return
 
         let time = this.targetTime
@@ -136,6 +154,8 @@ export class EntityBot extends Entity {
                 ( this as any ).world = null
                 let copy = clone( this )
                 this.world = thisWorld
+
+                copy.arivalCountdown = this.timeTravelDelay
 
                 world.addEntity( copy, copy.x, copy.y )
 
