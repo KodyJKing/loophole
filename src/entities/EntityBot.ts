@@ -124,8 +124,16 @@ export class EntityBot extends Entity {
             scale( -1, 1 )
             translate( -Tile.width, 0 )
         }
-        Canvas.context.globalAlpha = this.alpha( partialSteps )
+
+        let alpha = this.alpha( partialSteps )
+        Canvas.context.globalAlpha = alpha
         imageAt( sheet, 0, 0, 0, frame * Tile.width, Tile.width, Tile.width )
+
+        let lightness = ( 1 - alpha ) * alpha
+        Canvas.context.globalAlpha = lightness
+        Canvas.context.globalCompositeOperation = "xor"
+        imageAt( sheet, 0, 0, 0, frame * Tile.width, Tile.width, Tile.width )
+
         pop()
     }
 
