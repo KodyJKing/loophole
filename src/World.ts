@@ -144,7 +144,7 @@ export default class World {
             }
         }
 
-        for ( let entity of this.entities )
+        for ( let entity of this.entities.slice() )
             entity.update( game )
     }
 }
