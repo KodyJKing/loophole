@@ -16,7 +16,7 @@ export default class Timeline {
         this.state = state
         this.snapshots = [ clone( state ) ]
         this.time = 0
-        this.snapshotInterval = 1000
+        this.snapshotInterval = 10
         this.update = update
 
         this.modifications = {}
@@ -44,7 +44,7 @@ export default class Timeline {
         let snapshotIndex = Math.floor( time / this.snapshotInterval )
         let currentTime = snapshotIndex * this.snapshotInterval
         let remainingTime = time - currentTime
-        let snapshot = clone( this.snapshots[ snapshotIndex ] )
+        let snapshot = clone( this.modifications[ snapshotIndex ] || this.snapshots[ snapshotIndex ] )
 
         for ( let i = 0; i < remainingTime; i++ )
             snapshot = this.getUpdated( snapshot, ++currentTime )
@@ -80,11 +80,6 @@ export default class Timeline {
         applyChanges( modifiedState )
         let changed = !deepCompare( originalState, modifiedState )
         return changed ? { state: modifiedState, time } : null
-        // if ( changed ) {
-        //     this.modifications[ time ] = modifiedState
-        //     this.rewindToModification( time )
-        // }
-        // return changed
     }
 
     applyModification( time, state ) {

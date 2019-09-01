@@ -37,13 +37,13 @@ export class EntityBot extends Entity {
 
             main:
                 mov 1 ax
-                mov 3 ix
+                mov 2 ix
                 call drive
 
                 out timetravelport 0
 
                 mov 1 ax
-                mov 2 ix
+                mov 3 ix
                 call drive
 
                 out timetravelport 0

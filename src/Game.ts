@@ -8,13 +8,11 @@ import { getImage } from "./common/common";
 export default class Game {
     timeline: Timeline
     time = 0
-    // stepsPerFrame = 1 / 10
-    stepsPerFrame = 1 / 20
+    stepsPerFrame = 1 / 10
+    // stepsPerFrame = 1 / 20
+    rewindSpeed = 5
 
-    // targetTime: number | null = null
     modification: { time: number, state: World } | null = null
-
-    // timeDir = 1
 
     get partialSteps() {
         return this.time % 1
@@ -22,7 +20,8 @@ export default class Game {
 
     constructor() {
         let world = map0()
-        this.timeline = new Timeline( world, ( world: World ) => world.update( this ) )
+        this.timeline = new Timeline( world, ( world: World ) => world.update( this ) );
+        ( window as any ).timeline = this.timeline
     }
 
     get world() {
@@ -40,10 +39,12 @@ export default class Game {
 
         if ( this.modification !== null ) {
             if ( Math.floor( this.time ) == this.modification.time ) {
+                // console.log( "rewound" )
+                // console.log( { time: this.time, modification: this.modification.time } )
                 this.timeline.applyModification( this.modification.time, this.modification.state )
                 this.modification = null
             } else {
-                this.time = Math.max( 0, this.time + 5 * this.timeDir * this.stepsPerFrame )
+                this.time = Math.max( 0, this.time + this.rewindSpeed * this.timeDir * this.stepsPerFrame )
             }
         } else {
             this.time += this.stepsPerFrame
@@ -70,6 +71,12 @@ export default class Game {
     }
 
     modifyTime( time: number, applyChanges: ( world: World ) => void ) {
+        if ( this.modification !== null )
+            return
+        console.log( "modifying " + JSON.stringify( { time }, null, 2 ) )
         this.modification = this.timeline.getModifiedState( time, applyChanges )
+        if ( this.modification == null )
+            console.log( "unchanged" )
+        console.log()
     }
 }
