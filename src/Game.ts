@@ -38,23 +38,11 @@ export default class Game {
     update() {
         this.draw()
 
-        // let t = performance.now()
-        // let factor = 10 / this.stepsPerFrame / 2
-        // this.time = Math.floor( ( Math.sin( t / factor * 1 / 16 ) + 1 ) * factor )
-
-        // this.time += this.timeDir * this.stepsPerFrame
-        // if ( this.time <= 0 || this.time >= 10 )
-        //     this.timeDir *= -1
-        // this.time = Math.max( 0, this.time )
-
-        // this.time += this.timeDir * this.stepsPerFrame
-
         if ( this.modification !== null ) {
             if ( Math.floor( this.time ) == this.modification.time ) {
                 this.timeline.applyModification( this.modification.time, this.modification.state )
                 this.modification = null
             } else {
-                // let timeDir = Math.sign( this.modification.time - this.time )
                 this.time = Math.max( 0, this.time + 5 * this.timeDir * this.stepsPerFrame )
             }
         } else {
@@ -76,7 +64,7 @@ export default class Game {
             Canvas.translate( Canvas.canvas.width / 2, 2 * Canvas.canvas.height / 3 )
                 .scale( 4 * this.timeDir, 4 )
                 .translate( - img.width / 2, - img.height / 2 )
-                .image( getImage( "GuiTimeTravelIndicator" ), 0, 0 )
+                .image( img, 0, 0 )
         }
 
     }
