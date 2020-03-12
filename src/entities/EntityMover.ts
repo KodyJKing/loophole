@@ -11,7 +11,7 @@ export class EntityMover extends Entity {
         super.update( game )
         let { world, x, y } = this
         let { time } = world
-        if ( time % 2 != 0 )
+        if ( time % 1 != 0 )
             return
         if ( !world.isEmpty( x, y + this.direction ) )
             this.direction *= -1

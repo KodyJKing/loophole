@@ -1,5 +1,5 @@
-import { getInstruction } from "./Instructions";
-import assemble from "./assemble";
+import { getInstruction } from "./Instructions"
+import assemble from "./assemble"
 
 export enum ArgType {
     MEM_FIXED,
@@ -81,7 +81,7 @@ export default class VM {
                 return this.consume()
 
             default:
-                throw new Error( `Unrecognized rval type ${rvalType} at ${this.counter}` )
+                throw new Error( `Unrecognized rval type ${ rvalType } at ${ this.counter }` )
         }
     }
 
@@ -114,7 +114,7 @@ export default class VM {
             }
 
             default:
-                throw new Error( `Unrecognized lval type ${lvalType} at ${this.counter}` )
+                throw new Error( `Unrecognized lval type ${ lvalType } at ${ this.counter }` )
         }
     }
 
@@ -126,7 +126,7 @@ export default class VM {
         if ( instruction )
             instruction( this )
         else
-            throw new Error( `Unknown instruction code ${instructionCode} at ${this.counter - 1}` )
+            throw new Error( `Unknown instruction code ${ instructionCode } at ${ this.counter - 1 }` )
     }
 
     running(): boolean {

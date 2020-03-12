@@ -127,7 +127,8 @@ export default class World {
 
     drawEntities( partialSteps ) {
         let { push, pop } = Canvas
-        for ( let entity of this.entities ) {
+        let entityRenderList = this.entities.slice().sort( ( a, b ) => a.layer - b.layer )
+        for ( let entity of entityRenderList ) {
             push().translate( entity.x * Tile.width, entity.y * Tile.width )
             entity.draw( partialSteps )
             pop()

@@ -8,7 +8,8 @@ import { getImage } from "./common/common";
 export default class Game {
     timeline: Timeline
     time = 0
-    stepsPerFrame = 1 / 10
+    // stepsPerFrame = 1 / 10
+    stepsPerFrame = 1 / 15
     // stepsPerFrame = 1 / 20
     rewindSpeed = 5
 
@@ -62,7 +63,7 @@ export default class Game {
         if ( this.modification !== null ) {
             let img = getImage( "GuiTimeTravelIndicator" )
             Canvas.context.globalAlpha = 0.5
-            Canvas.translate( Canvas.canvas.width / 2, 2 * Canvas.canvas.height / 3 )
+            Canvas.translate( Canvas.canvas.width / 2, Canvas.canvas.height / 4 )
                 .scale( 4 * this.timeDir, 4 )
                 .translate( - img.width / 2, - img.height / 2 )
                 .image( img, 0, 0 )

@@ -10,6 +10,7 @@ export default class Entity {
     y = 0
     dx = 0
     dy = 0
+    layer = 0
 
     displacementX( partialSteps ) { return this.dx * Tile.width * ( partialSteps - 1 ) }
     displacementY( partialSteps ) { return this.dy * Tile.width * ( partialSteps - 1 ) }
