@@ -1,30 +1,26 @@
-import clone, { deepCompare } from "./common/clone";
+import clone, { deepCompare } from "./common/clone"
 
 function maybeClone( value, doClone ) {
     return doClone ? clone( value ) : value
 }
 export default class Timeline {
     state: any
-    snapshots: any[]
+    snapshots: { [ name: number ]: any }
     time: number
     snapshotInterval: number
     update: ( any ) => void
 
-    modifications: { [ name: number ]: any }
-
     constructor( state = {}, update: ( any ) => void ) {
         this.state = state
-        this.snapshots = [ clone( state ) ]
+        this.snapshots = { "0": clone( state ) }
         this.time = 0
-        this.snapshotInterval = 1000
+        this.snapshotInterval = 100
         this.update = update
-
-        this.modifications = {}
     }
 
     getUpdated( state, time ) {
-        if ( this.modifications[ time ] )
-            state = clone( this.modifications[ time ] )
+        if ( this.snapshots[ time ] )
+            state = clone( this.snapshots[ time ] )
         else
             this.update( state )
         return state
@@ -38,13 +34,13 @@ export default class Timeline {
     }
 
     getState( time = 0 ) {
-        if ( this.modifications[ time ] )
-            return clone( this.modifications[ time ] )
+        if ( this.snapshots[ time ] )
+            return clone( this.snapshots[ time ] )
 
         let snapshotIndex = Math.floor( time / this.snapshotInterval )
         let currentTime = snapshotIndex * this.snapshotInterval
         let remainingTime = time - currentTime
-        let snapshot = clone( this.modifications[ snapshotIndex ] || this.snapshots[ snapshotIndex ] )
+        let snapshot = clone( this.snapshots[ snapshotIndex ] || this.snapshots[ snapshotIndex ] )
 
         for ( let i = 0; i < remainingTime; i++ )
             snapshot = this.getUpdated( snapshot, ++currentTime )
@@ -53,10 +49,13 @@ export default class Timeline {
     }
 
     rewindTo( time ) {
+        for ( let key in this.snapshots ) {
+            let otherTime = parseInt( key, 10 )
+            if ( otherTime > time )
+                delete this.snapshots[ otherTime ]
+        }
         this.state = this.getState( time )
         this.time = time
-        let snapshotIndex = Math.floor( time / this.snapshotInterval )
-        this.snapshots.length = snapshotIndex + 1
     }
 
     gotoTime( time ) {
@@ -69,8 +68,10 @@ export default class Timeline {
     }
 
     snapshot() {
-        let prev = this.snapshots[ this.snapshots.length - 1 ]
-        this.snapshots.push( clone( this.state, prev ) )
+        let i = this.time / this.snapshotInterval
+        let prev = this.snapshots[ i - 1 ]
+        this.snapshots[ i ] = clone( this.state, prev )
+
         // console.log( "Snapshot count: " + this.snapshots.length )
     }
 
@@ -83,16 +84,8 @@ export default class Timeline {
     }
 
     applyModification( time, state ) {
-        this.modifications[ time ] = state
-        this.rewindToModification( time )
-    }
-
-    rewindToModification( time ) {
-        for ( let key of Object.keys( this.modifications ) ) {
-            let otherTime = parseInt( key, 10 )
-            if ( otherTime > time )
-                delete this.modifications[ otherTime ]
-        }
+        this.snapshots[ time ] = state
         this.rewindTo( time )
     }
+
 }
