@@ -24,7 +24,7 @@ export default function clone( cur, prev: any = undefined, cloned = new Map() ) 
     let result = new cur.constructor()
     let deepEqual = ( prev != undefined )
     cloned.set( cur, result )
-    for ( let key of Object.keys( cur ) ) {
+    for ( let key in cur ) {
         if ( key == "$dirty" ) continue
         let curVal = cur[ key ]
         let prevVal = prev ? prev[ key ] : undefined
