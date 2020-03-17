@@ -37,18 +37,19 @@ export default class Timeline {
         if ( this.snapshots[ time ] )
             return clone( this.snapshots[ time ] )
 
-        let snapshotIndex = Math.floor( time / this.snapshotInterval )
-        let currentTime = snapshotIndex * this.snapshotInterval
-        let remainingTime = time - currentTime
-        let snapshot = clone( this.snapshots[ snapshotIndex ] || this.snapshots[ snapshotIndex ] )
+        let snapshotNumber = Math.floor( time / this.snapshotInterval )
+        let lastSnapshotTime = snapshotNumber * this.snapshotInterval
+        let remainingTime = time - lastSnapshotTime
+        let snapshot = clone( this.snapshots[ lastSnapshotTime ] || this.snapshots[ lastSnapshotTime ] )
 
         for ( let i = 0; i < remainingTime; i++ )
-            snapshot = this.getUpdated( snapshot, ++currentTime )
+            snapshot = this.getUpdated( snapshot, ++lastSnapshotTime )
 
         return snapshot
     }
 
     rewindTo( time ) {
+        debugger
         for ( let key in this.snapshots ) {
             let otherTime = parseInt( key, 10 )
             if ( otherTime > time )
@@ -68,10 +69,8 @@ export default class Timeline {
     }
 
     snapshot() {
-        let i = this.time / this.snapshotInterval
-        let prev = this.snapshots[ i - 1 ]
-        this.snapshots[ i ] = clone( this.state, prev )
-
+        let prev = this.snapshots[ this.time - this.snapshotInterval ]
+        this.snapshots[ this.time ] = clone( this.state, prev )
         // console.log( "Snapshot count: " + this.snapshots.length )
     }
 
