@@ -14,8 +14,10 @@ export default function clone( cur, prev: any = undefined, cloned = new Map() ) 
     if ( isValueType( cur ) )
         return cur
 
-    let unchanged = ( cur.$static === true ) || ( cur.$dirty === false )
-    if ( unchanged && prev != undefined )
+    if ( cur.$static == true )
+        return cur
+
+    if ( cur.$dirty === false && prev != undefined )
         return prev
 
     if ( cloned.has( cur ) )
