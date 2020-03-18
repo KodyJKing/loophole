@@ -3,14 +3,14 @@ import clone, { deepCompare } from "./common/clone"
 function maybeClone( value, doClone ) {
     return doClone ? clone( value ) : value
 }
-export default class Timeline {
-    state: any
-    snapshots: { [ name: number ]: any }
+export default class Timeline<T> {
+    state: T
+    snapshots: { [ name: number ]: T }
     time: number
     snapshotInterval: number
-    update: ( any ) => void
+    update: ( T ) => void
 
-    constructor( state = {}, update: ( any ) => void ) {
+    constructor( state, update: ( T ) => void ) {
         this.state = state
         this.snapshots = { "0": clone( state ) }
         this.time = 0
@@ -18,7 +18,7 @@ export default class Timeline {
         this.update = update
     }
 
-    getUpdated( state, time ) {
+    getUpdated( state: T, time ) {
         if ( this.snapshots[ time ] )
             state = clone( this.snapshots[ time ] )
         else
@@ -33,7 +33,7 @@ export default class Timeline {
             this.snapshot()
     }
 
-    getState( time = 0 ) {
+    getState( time = 0 ): T {
         if ( this.snapshots[ time ] )
             return clone( this.snapshots[ time ] )
 
@@ -49,7 +49,6 @@ export default class Timeline {
     }
 
     rewindTo( time ) {
-        debugger
         for ( let key in this.snapshots ) {
             let otherTime = parseInt( key, 10 )
             if ( otherTime > time )

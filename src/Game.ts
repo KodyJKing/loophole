@@ -6,14 +6,12 @@ import clone from "./common/clone";
 import { getImage } from "./common/common";
 
 export default class Game {
-    timeline: Timeline
+    timeline: Timeline<World>
     time = 0
-    // stepsPerFrame = 1 / 10
     stepsPerFrame = 1 / 15
-    // stepsPerFrame = 1 / 20
     rewindSpeed = 5
 
-    modification: { time: number, state: World } | null = null
+    timeJump: { time: number, state: World } | null = null
 
     get partialSteps() {
         return this.time % 1
@@ -29,23 +27,23 @@ export default class Game {
         return this.timeline.state as World
     }
 
-    get timeDir() {
-        return this.modification !== null ?
-            Math.sign( this.modification.time - this.time ) :
+    get timeDirection() {
+        return this.timeJump !== null ?
+            Math.sign( this.timeJump.time - this.time ) :
             1
     }
 
     update() {
         this.draw()
 
-        if ( this.modification !== null ) {
-            if ( Math.floor( this.time ) == this.modification.time ) {
+        if ( this.timeJump !== null ) {
+            if ( Math.floor( this.time ) == this.timeJump.time ) {
                 // console.log( "rewound" )
                 // console.log( { time: this.time, modification: this.modification.time } )
-                this.timeline.applyModification( this.modification.time, this.modification.state )
-                this.modification = null
+                this.timeline.applyModification( this.timeJump.time, this.timeJump.state )
+                this.timeJump = null
             } else {
-                this.time = Math.max( 0, this.time + this.rewindSpeed * this.timeDir * this.stepsPerFrame )
+                this.time = Math.max( 0, this.time + this.rewindSpeed * this.timeDirection * this.stepsPerFrame )
             }
         } else {
             this.time += this.stepsPerFrame
@@ -60,11 +58,11 @@ export default class Game {
         Canvas.context.imageSmoothingEnabled = false
         this.world.draw( this.partialSteps )
 
-        if ( this.modification !== null ) {
+        if ( this.timeJump !== null ) {
             let img = getImage( "GuiTimeTravelIndicator" )
             Canvas.context.globalAlpha = 0.5
             Canvas.translate( Canvas.canvas.width / 2, Canvas.canvas.height / 4 )
-                .scale( 4 * this.timeDir, 4 )
+                .scale( 4 * this.timeDirection, 4 )
                 .translate( - img.width / 2, - img.height / 2 )
                 .image( img, 0, 0 )
         }
@@ -72,11 +70,11 @@ export default class Game {
     }
 
     modifyTime( time: number, applyChanges: ( world: World ) => void ) {
-        if ( this.modification !== null )
+        if ( this.timeJump !== null )
             return
         console.log( "modifying " + JSON.stringify( { time }, null, 2 ) )
-        this.modification = this.timeline.getModifiedState( time, applyChanges )
-        if ( this.modification == null )
+        this.timeJump = this.timeline.getModifiedState( time, applyChanges )
+        if ( this.timeJump == null )
             console.log( "unchanged" )
         console.log()
     }
