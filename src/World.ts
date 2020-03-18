@@ -15,8 +15,6 @@ export enum TileLayers {
 export default class World {
     layers!: TileLayer[]
     entities!: Entity[]
-    backgroundTiles!: ( Tile | null )[]
-
     width!: number
     height!: number
     stars!: Starfield
@@ -31,7 +29,6 @@ export default class World {
             new Array( width * height ),
             new Array( width * height )
         ]
-        result.backgroundTiles = new Array( width * height )
         result.entities = []
         result.stars = Starfield.create()
         return result
