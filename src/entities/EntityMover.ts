@@ -7,8 +7,8 @@ export class EntityMover extends Entity {
 
     direction = 1
 
-    update( game: Game ) {
-        super.update( game )
+    update() {
+        super.update()
         let { world, x, y } = this
         let { time } = world
         if ( time % 1 != 0 )

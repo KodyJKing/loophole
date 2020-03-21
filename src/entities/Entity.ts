@@ -36,7 +36,7 @@ export default class Entity {
         return !world.isEmpty( x, y + 1 )
     }
 
-    update( game: Game ) {
+    update() {
         this.dx = 0
         this.dy = 0
     }

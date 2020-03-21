@@ -3,9 +3,9 @@ import { getImage } from "../common/common"
 import VM from "../vm/VM"
 import Entity from "./Entity"
 import Tile from "../tiles/Tile"
-import Game from "../Game";
-import World from "../World";
-import clone, { deepCompare } from "../common/clone";
+import Game from "../Game"
+import World from "../World"
+import clone, { deepCompare } from "../common/clone"
 
 export class EntityBot extends Entity {
     vm!: VM
@@ -40,7 +40,7 @@ export class EntityBot extends Entity {
                 mov 2 ix
                 call drive
 
-                out timetravelport 0
+                out timetravelport 1
 
                 mov 1 ax
                 mov 3 ix
@@ -137,25 +137,25 @@ export class EntityBot extends Entity {
         pop()
     }
 
-    update( game: Game ) {
-        super.update( game )
+    update() {
+        super.update()
         this.timeout = Math.max( 0, this.timeout - 1 )
         for ( let i = 0; this.timeout == 0 && i < 100; i++ )
             this.vm.step()
         this.move( 0, 1 )
-        this.maybeTimeTravel( game )
+        this.maybeTimeTravel()
         this.timeTravelCountdown--
         this.arivalCountdown--
     }
 
-    maybeTimeTravel( game: Game ) {
+    maybeTimeTravel() {
         if ( this.targetTime == null || this.timeTravelCountdown > 1 )
             return
 
         let time = this.targetTime
         this.targetTime = null
 
-        game.modifyTime(
+        Game.instance.modifyWorldStateAtTime(
             time,
             ( world: World ) => {
                 let thisWorld = this.world;

@@ -2,46 +2,63 @@ import Canvas from "./common/Canvas";
 import Timeline from "./Timeline";
 import { map0 } from "./maps";
 import World from "./World";
-import clone from "./common/clone";
+import clone, { deepCompare } from "./common/clone";
 import { getImage } from "./common/common";
 
 export default class Game {
-    timeline: Timeline<World>
-    time = 0
-    stepsPerFrame = 1 / 15
-    rewindSpeed = 5
-
-    timeJump: { time: number, state: World } | null = null
-
-    get partialSteps() {
-        return this.time % 1
-    }
+    static instance: Game
 
     constructor() {
+        Game.instance = this
         let world = map0()
-        this.timeline = new Timeline( world, ( world: World ) => world.update( this ) );
+        this.timeline = new Timeline( world, ( world: World ) => world.update() );
         ( window as any ).timeline = this.timeline
     }
 
-    get world() {
-        return this.timeline.state as World
-    }
-
-    get timeDirection() {
-        return this.timeJump !== null ?
-            Math.sign( this.timeJump.time - this.time ) :
-            1
-    }
+    get world() { return this.timeline.state as World }
 
     update() {
         this.draw()
+        this.updateTime()
+    }
 
-        if ( this.timeJump !== null ) {
-            if ( Math.floor( this.time ) == this.timeJump.time ) {
+    draw() {
+        Canvas.fitWindow()
+        Canvas.context.imageSmoothingEnabled = false
+        this.world.draw( this.partialSteps )
+
+        if ( this.timeModification !== null ) {
+            let img = getImage( "GuiTimeTravelIndicator" )
+            Canvas.context.globalAlpha = 0.5
+            Canvas.translate( Canvas.canvas.width / 2, Canvas.canvas.height / 4 )
+                .scale( 4 * this.timeDirection, 4 )
+                .translate( - img.width / 2, - img.height / 2 )
+                .image( img, 0, 0 )
+        }
+
+    }
+
+    // === Time Logic ===
+    readonly stepsPerFrame = 1 / 15
+    readonly rewindSpeed = 5
+    private timeModification: { time: number, modifiedState: World } | null = null
+    private timeline: Timeline<World>
+    time = 0
+
+    get partialSteps() { return this.time % 1 }
+    get timeDirection() {
+        return this.timeModification !== null ?
+            Math.sign( this.timeModification.time - this.time ) :
+            1
+    }
+
+    private updateTime() {
+        if ( this.timeModification !== null ) {
+            if ( Math.floor( this.time ) == this.timeModification.time ) {
                 // console.log( "rewound" )
                 // console.log( { time: this.time, modification: this.modification.time } )
-                this.timeline.applyModification( this.timeJump.time, this.timeJump.state )
-                this.timeJump = null
+                this.timeline.applyModification( this.timeModification.time, this.timeModification.modifiedState )
+                this.timeModification = null
             } else {
                 this.time = Math.max( 0, this.time + this.rewindSpeed * this.timeDirection * this.stepsPerFrame )
             }
@@ -53,29 +70,21 @@ export default class Game {
         this.timeline.gotoTime( step )
     }
 
-    draw() {
-        Canvas.fitWindow()
-        Canvas.context.imageSmoothingEnabled = false
-        this.world.draw( this.partialSteps )
-
-        if ( this.timeJump !== null ) {
-            let img = getImage( "GuiTimeTravelIndicator" )
-            Canvas.context.globalAlpha = 0.5
-            Canvas.translate( Canvas.canvas.width / 2, Canvas.canvas.height / 4 )
-                .scale( 4 * this.timeDirection, 4 )
-                .translate( - img.width / 2, - img.height / 2 )
-                .image( img, 0, 0 )
-        }
-
+    private getModifiedWorldState( time, applyChanges: ( any ) => void ) {
+        let originalState = this.timeline.getState( time )
+        let modifiedState = clone( originalState )
+        applyChanges( modifiedState )
+        let changed = !deepCompare( originalState, modifiedState )
+        return changed ? { modifiedState, time } : null
     }
 
-    modifyTime( time: number, applyChanges: ( world: World ) => void ) {
-        if ( this.timeJump !== null )
+    modifyWorldStateAtTime( time: number, applyChanges: ( world: World ) => void ) {
+        if ( this.timeModification !== null )
             return
-        console.log( "modifying " + JSON.stringify( { time }, null, 2 ) )
-        this.timeJump = this.timeline.getModifiedState( time, applyChanges )
-        if ( this.timeJump == null )
-            console.log( "unchanged" )
-        console.log()
+        // console.log( "modifying " + JSON.stringify( { time }, null, 2 ) )
+        this.timeModification = this.getModifiedWorldState( time, applyChanges )
+        // if ( this.timeJump == null )
+        //     console.log( "unchanged" )
+        // console.log()
     }
 }

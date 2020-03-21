@@ -132,7 +132,7 @@ export default class World {
         }
     }
 
-    update( game: Game ) {
+    update() {
         this.time++
         for ( let y = 0; y < this.height; y++ ) {
             for ( let x = 0; x < this.width; x++ ) {
@@ -143,6 +143,6 @@ export default class World {
         }
 
         for ( let entity of this.entities.slice() )
-            entity.update( game )
+            entity.update()
     }
 }

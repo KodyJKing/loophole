@@ -1,8 +1,6 @@
 import clone, { deepCompare } from "./common/clone"
 
-function maybeClone( value, doClone ) {
-    return doClone ? clone( value ) : value
-}
+// Responsible for calculating, storing amd retrieving game state at arbitrary time.
 export default class Timeline<T> {
     state: T
     snapshots: { [ name: number ]: T }
@@ -12,7 +10,7 @@ export default class Timeline<T> {
 
     constructor( state, update: ( T ) => void ) {
         this.state = state
-        this.snapshots = { "0": clone( state ) }
+        this.snapshots = { [ 0 ]: clone( state ) }
         this.time = 0
         this.snapshotInterval = 100
         this.update = update
@@ -71,14 +69,6 @@ export default class Timeline<T> {
         let prev = this.snapshots[ this.time - this.snapshotInterval ]
         this.snapshots[ this.time ] = clone( this.state, prev )
         // console.log( "Snapshot count: " + this.snapshots.length )
-    }
-
-    getModifiedState( time, applyChanges: ( any ) => void ) {
-        let originalState = this.getState( time )
-        let modifiedState = clone( originalState )
-        applyChanges( modifiedState )
-        let changed = !deepCompare( originalState, modifiedState )
-        return changed ? { state: modifiedState, time } : null
     }
 
     applyModification( time, state ) {
