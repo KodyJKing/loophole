@@ -5,6 +5,8 @@ import World from "./World";
 import clone, { deepCompare } from "./common/clone";
 import { getImage } from "./common/common";
 
+type TimeModification = { time: number, modifiedState: World }
+
 export default class Game {
     static instance: Game
 
@@ -41,7 +43,8 @@ export default class Game {
     // === Time Logic ===
     readonly stepsPerFrame = 1 / 15
     readonly rewindSpeed = 5
-    private timeModification: { time: number, modifiedState: World } | null = null
+    // private unresolvedJumpTimes: number[] = []
+    private timeModification: TimeModification | null = null
     private timeline: Timeline<World>
     time = 0
 
@@ -81,10 +84,28 @@ export default class Game {
     modifyWorldStateAtTime( time: number, applyChanges: ( world: World ) => void ) {
         if ( this.timeModification !== null )
             return
+
+        // this.unresolvedJumpTimes.sort()
+
         // console.log( "modifying " + JSON.stringify( { time }, null, 2 ) )
+
         this.timeModification = this.getModifiedWorldState( time, applyChanges )
+
+        // if ( this.timeModification == null ) { // Resolved jump.
+        //     let i = this.unresolvedJumpTimes.indexOf( time )
+        //     this.unresolvedJumpTimes.splice( i, 1 )
+        // } else { // New jump.
+        //     this.unresolvedJumpTimes.push( time )
+        //     for ( let i = 0; i < this.unresolvedJumpTimes.length; i++ ) {
+        //         if ( this.unresolvedJumpTimes[ i ] > time )
+        //             this.unresolvedJumpTimes.splice( i, 1 )
+        //     }
+        // }
+
         // if ( this.timeJump == null )
         //     console.log( "unchanged" )
         // console.log()
+
+        console.log( this.unresolvedJumpTimes )
     }
 }
