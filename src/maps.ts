@@ -45,10 +45,11 @@ export function map0() {
 
     world.addEntity( new EntityPlate(), 12, 12 )
 
-    world.addEntity( new EntityDoor, 14, 11 )
+    let doorX = 16
+    world.addEntity( new EntityDoor, doorX, 11 )
     for ( let i = 10; i >= 7; i-- )
-        world.setTile( 14, i, TilePanel() )
-    for ( let i = 15; i < world.width; i++ )
+        world.setTile( doorX, i, TilePanel() )
+    for ( let i = doorX + 1; i < world.width; i++ )
         world.setTile( i, 7, TilePanel() )
 
     // world.addEntity( new EntityMover(), 19, 12 )
