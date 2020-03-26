@@ -9,7 +9,7 @@ window.onload = () => {
         let oldTime = time
         time = performance.now()
         let dt = time - oldTime
-        game.update( dt / 1000 )
+        game.update( Math.min( dt / 1000, 0.25 ) )
         requestAnimationFrame( loop )
     }
     loop()
