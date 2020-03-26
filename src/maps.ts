@@ -4,6 +4,7 @@ import { forRect } from "./common/common"
 import { EntityBot } from "./entities/EntityBot"
 import { EntityMover } from "./entities/EntityMover"
 import EntityPlate from "./entities/EntityPlate"
+import EntityDoor from "./entities/EntityDoor"
 
 export function map0() {
     let world = World.create( 23, 15 )
@@ -44,7 +45,13 @@ export function map0() {
 
     world.addEntity( new EntityPlate(), 12, 12 )
 
-    world.addEntity( new EntityMover(), 19, 12 )
+    world.addEntity( new EntityDoor, 14, 11 )
+    for ( let i = 10; i >= 7; i-- )
+        world.setTile( 14, i, TilePanel() )
+    for ( let i = 15; i < world.width; i++ )
+        world.setTile( i, 7, TilePanel() )
+
+    // world.addEntity( new EntityMover(), 19, 12 )
 
     world.setTile( 6, 12, TileCrate() )
     world.setTile( 7, 11, TileCrate() )

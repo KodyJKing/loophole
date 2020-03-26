@@ -21,7 +21,6 @@ export class EntityBot extends Entity {
         let result = new EntityBot()
 
         let source = `
-            #def stepcount 10
             #def driveport 0
             #def timetravelport 1
             #def ongroundport 0
@@ -35,32 +34,23 @@ export class EntityBot extends Entity {
                 loop ix $-4
             end
 
+            wait:
+                mov 100 cx
+                loop cx $-0
+            end
+
             main:
                 mov 1 ax
-                mov 2 ix
+                mov 7 ix
                 call drive
 
-                out timetravelport 1
+                call wait
+
+                out timetravelport -5
 
                 mov 1 ax
-                mov 3 ix
+                mov 5 ix
                 call drive
-
-                out timetravelport 0
-
-                mov 1 ax
-                mov 2 ix
-                call drive
-
-                // loop:
-                //     mov -1 ax
-                //     mov stepcount ix
-                //     call drive
-
-                //     mov 1 ax
-                //     mov stepcount ix
-                //     call drive
-                // jmp loop
         `
 
         let vm = VM.create( source, 1024, result )
@@ -73,11 +63,12 @@ export class EntityBot extends Entity {
         switch ( port ) {
             case 0: {
                 this.drive( message )
-                this.timeout = Math.abs( this.dx ) + Math.abs( this.dy )
+                // this.timeout = Math.abs( this.dx ) + Math.abs( this.dy )
+                this.timeout = 1 + Math.abs( this.dy )
                 break
             }
             case 1: {
-                this.targetTime = message
+                this.targetTime = this.world.time + message
                 this.timeTravelCountdown = this.timeTravelDelay
                 this.timeout = this.timeTravelDelay + 1
                 break

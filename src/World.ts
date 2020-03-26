@@ -1,8 +1,8 @@
-import Canvas from "./common/Canvas";
-import Tile from "./tiles/Tile";
-import Starfield from "./Starfield";
-import Entity from "./entities/Entity";
-import Game from "./Game";
+import Canvas from "./common/Canvas"
+import Tile from "./tiles/Tile"
+import Starfield from "./Starfield"
+import Entity from "./entities/Entity"
+import Game from "./Game"
 
 type TileLayer = ( Tile | null )[]
 
@@ -15,9 +15,11 @@ export enum TileLayers {
 export default class World {
     layers!: TileLayer[]
     entities!: Entity[]
+    blocked!: boolean[]
     width!: number
     height!: number
     stars!: Starfield
+    triggers!: { [ name: string ]: boolean }
     time = 0
 
     static create( width, height ) {
@@ -29,8 +31,12 @@ export default class World {
             new Array( width * height ),
             new Array( width * height )
         ]
+        result.blocked = new Array( width * height )
+        for ( let i = 0; i < result.blocked.length; i++ )
+            result.blocked[ i ] = false
         result.entities = []
         result.stars = Starfield.create()
+        result.triggers = {}
         return result
     }
 
@@ -69,8 +75,16 @@ export default class World {
         tiles[ this.index( x, y ) ] = null
     }
 
-    isEmpty( x, y, layer = TileLayers.center ) {
+    isAir( x, y, layer = TileLayers.center ) {
         return this.getTile( x, y, layer ) == null
+    }
+
+    block( x, y ) {
+        this.blocked[ this.index( x, y ) ] = true
+    }
+
+    isEmpty( x, y ) {
+        return this.isAir( x, y ) && !this.blocked[ this.index( x, y ) ]
     }
 
     addEntity( entity: Entity, x, y ) {
@@ -141,8 +155,12 @@ export default class World {
                     tile.update( this, x, y )
             }
         }
-
-        for ( let entity of this.entities.slice() )
+        let currentEntities = this.entities.slice()
+        for ( let entity of currentEntities )
+            entity.block()
+        for ( let entity of currentEntities )
             entity.update()
+        for ( let i = 0; i < this.blocked.length; i++ )
+            this.blocked[ i ] = false
     }
 }

@@ -18,6 +18,11 @@ export class EntityMover extends Entity {
         this.move( 0, this.direction )
     }
 
+    block() {
+        let { world, x, y } = this
+        world.block( x, y )
+    }
+
     get image(): HTMLImageElement | undefined {
         return getImage(
             this.direction == 1 ?

@@ -1,9 +1,10 @@
-import Canvas from "./common/Canvas";
-import Timeline from "./Timeline";
-import { map0 } from "./maps";
-import World from "./World";
-import clone, { deepCompare } from "./common/clone";
-import { getImage } from "./common/common";
+import Canvas from "./common/Canvas"
+import Timeline from "./Timeline"
+import { map0 } from "./maps"
+import World from "./World"
+import clone, { deepCompare } from "./common/clone"
+import { getImage } from "./common/common"
+import JumpTracker from "./common/JumpTracker"
 
 type TimeModification = { time: number, modifiedState: World }
 
@@ -19,9 +20,9 @@ export default class Game {
 
     get world() { return this.timeline.state as World }
 
-    update() {
+    update( dt: number ) {
         this.draw()
-        this.updateTime()
+        this.updateTime( dt )
     }
 
     draw() {
@@ -40,14 +41,19 @@ export default class Game {
 
     }
 
-    // === Time Logic ===
+    // ==== Time Logic ====
+
     readonly stepsPerFrame = 1 / 15
+    readonly stepsPerSecond = 4
     readonly rewindSpeed = 5
-    // private unresolvedJumpTimes: number[] = []
+    private openJumps: number[] = []
+    private jumpTracker = new JumpTracker()
     private timeModification: TimeModification | null = null
     private timeline: Timeline<World>
+    private slowDown = 0
     time = 0
 
+    get speedUp() { return 1 - this.slowDown }
     get partialSteps() { return this.time % 1 }
     get timeDirection() {
         return this.timeModification !== null ?
@@ -55,25 +61,24 @@ export default class Game {
             1
     }
 
-    private updateTime() {
+    private updateTime( dt: number ) {
         if ( this.timeModification !== null ) {
             if ( Math.floor( this.time ) == this.timeModification.time ) {
-                // console.log( "rewound" )
-                // console.log( { time: this.time, modification: this.modification.time } )
                 this.timeline.applyModification( this.timeModification.time, this.timeModification.modifiedState )
                 this.timeModification = null
+                this.slowDown = 1
             } else {
-                this.time = Math.max( 0, this.time + this.rewindSpeed * this.timeDirection * this.stepsPerFrame )
+                this.time = Math.max( 0, this.time + this.rewindSpeed * this.timeDirection * this.stepsPerSecond * dt * this.speedUp )
             }
         } else {
-            this.time += this.stepsPerFrame
+            this.time += this.stepsPerSecond * dt * this.speedUp
         }
-
         let step = Math.floor( this.time )
         this.timeline.gotoTime( step )
+        this.slowDown *= Math.pow( 0.1, this.stepsPerSecond * dt )
     }
 
-    private getModifiedWorldState( time, applyChanges: ( any ) => void ) {
+    private getModifiedWorldState( time, applyChanges: ( world: World ) => void ) {
         let originalState = this.timeline.getState( time )
         let modifiedState = clone( originalState )
         applyChanges( modifiedState )
@@ -82,30 +87,14 @@ export default class Game {
     }
 
     modifyWorldStateAtTime( time: number, applyChanges: ( world: World ) => void ) {
-        if ( this.timeModification !== null )
-            return
-
-        // this.unresolvedJumpTimes.sort()
-
-        // console.log( "modifying " + JSON.stringify( { time }, null, 2 ) )
-
+        if ( this.timeDirection < 0 )
+            return // Don't make modifications while rewinding.
         this.timeModification = this.getModifiedWorldState( time, applyChanges )
-
-        // if ( this.timeModification == null ) { // Resolved jump.
-        //     let i = this.unresolvedJumpTimes.indexOf( time )
-        //     this.unresolvedJumpTimes.splice( i, 1 )
-        // } else { // New jump.
-        //     this.unresolvedJumpTimes.push( time )
-        //     for ( let i = 0; i < this.unresolvedJumpTimes.length; i++ ) {
-        //         if ( this.unresolvedJumpTimes[ i ] > time )
-        //             this.unresolvedJumpTimes.splice( i, 1 )
-        //     }
-        // }
-
-        // if ( this.timeJump == null )
-        //     console.log( "unchanged" )
-        // console.log()
-
-        console.log( this.unresolvedJumpTimes )
+        if ( this.timeModification == null ) {
+            this.jumpTracker.resolveJump( time )
+        } else {
+            this.jumpTracker.openJump( time )
+            this.slowDown = 1
+        }
     }
 }

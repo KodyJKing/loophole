@@ -7,12 +7,15 @@ import { getImage } from "../common/common"
 export default class EntityPlate extends Entity {
     active = false
     layer = 1
+    triggerName = "plateActive"
 
     update() {
         this.active = false
+        this.world.triggers[ this.triggerName ] = false
         for ( let entity of this.world.entities ) {
             if ( entity.x == this.x && entity.y == this.y && entity instanceof EntityBot ) {
                 this.active = true
+                this.world.triggers[ this.triggerName ] = true
                 break
             }
         }

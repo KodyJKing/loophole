@@ -4,8 +4,12 @@ import Canvas from "./common/Canvas";
 window.onload = () => {
     Canvas.setup()
     let game = new Game()
+    let time = performance.now()
     function loop() {
-        game.update()
+        let oldTime = time
+        time = performance.now()
+        let dt = time - oldTime
+        game.update( dt / 1000 )
         requestAnimationFrame( loop )
     }
     loop()

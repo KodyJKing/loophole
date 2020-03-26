@@ -41,6 +41,8 @@ export default class Entity {
         this.dy = 0
     }
 
+    block() { }
+
     draw( partialSteps ) {
         Canvas.push().translate( this.displacementX( partialSteps ), this.displacementY( partialSteps ) )
         this.drawAfterTranslation( partialSteps )
