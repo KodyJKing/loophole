@@ -3,6 +3,7 @@ import Tile from "./tiles/Tile"
 import Starfield from "./Starfield"
 import Entity from "./entities/Entity"
 import Game from "./Game"
+import Matrix3 from "./common/math/Matrix3"
 
 type TileLayer = ( Tile | null )[]
 
@@ -12,14 +13,18 @@ export enum TileLayers {
     foreground
 }
 
+const zoom = 4
 export default class World {
     layers!: TileLayer[]
     entities!: Entity[]
     blocked!: boolean[]
+    triggers!: { [ name: string ]: boolean }
+
     width!: number
     height!: number
+
     stars!: Starfield
-    triggers!: { [ name: string ]: boolean }
+
     time = 0
 
     static create( width, height ) {
@@ -31,12 +36,11 @@ export default class World {
             new Array( width * height ),
             new Array( width * height )
         ]
-        result.blocked = new Array( width * height )
-        for ( let i = 0; i < result.blocked.length; i++ )
-            result.blocked[ i ] = false
         result.entities = []
-        result.stars = Starfield.create()
+        result.blocked = new Array( width * height )
+        for ( let i = 0; i < result.blocked.length; i++ ) result.blocked[ i ] = false
         result.triggers = {}
+        result.stars = Starfield.create()
         return result
     }
 
@@ -46,6 +50,12 @@ export default class World {
 
     get pixelHeight() {
         return this.height * Tile.width
+    }
+
+    transform() {
+        let { width, height } = Canvas.canvas
+        let { pixelWidth, pixelHeight } = this
+        return Matrix3.transformation( - pixelWidth / 2, - pixelHeight / 2, 0, zoom, zoom, width / 2, height / 2 )
     }
 
     inBounds( x, y ) {
@@ -114,7 +124,7 @@ export default class World {
 
         const zoom = 4
         let { pixelWidth, pixelHeight } = this
-        push().translate( width / 2, height / 2 ).scale( zoom, zoom ).translate( - pixelWidth / 2, - pixelHeight / 2 )
+        push().transform( this.transform() )
         this.drawTiles( partialSteps, TileLayers.background )
         this.drawTiles( partialSteps, TileLayers.center )
         this.drawEntities( partialSteps )

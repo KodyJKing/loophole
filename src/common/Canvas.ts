@@ -1,3 +1,5 @@
+import Matrix3 from "./math/Matrix3"
+
 export default class Canvas {
 
     static canvas: HTMLCanvasElement
@@ -92,6 +94,11 @@ export default class Canvas {
     static scale( x, y ) {
         Canvas.context.scale( x, y )
         return Canvas
+    }
+
+    static transform( mat: Matrix3 ) {
+        let { m11, m12, m13, m21, m22, m23 } = mat
+        Canvas.context.transform( m11, m21, m12, m22, m13, m23 )
     }
 
     static push() {

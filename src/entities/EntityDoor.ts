@@ -2,7 +2,7 @@ import Entity from "./Entity"
 import { getImage } from "../common/common"
 import Tile from "../tiles/Tile"
 import Canvas from "../common/Canvas"
-import { clamp } from "../common/Math"
+import { clamp } from "../common/math/Math"
 import { TileThruster } from "../tiles/Tiles"
 
 export default class EntityDoor extends Entity {

@@ -46,7 +46,6 @@ export default class Game {
     readonly stepsPerFrame = 1 / 15
     readonly stepsPerSecond = 4
     readonly rewindSpeed = 5
-    private openJumps: number[] = []
     private jumpTracker = new JumpTracker()
     private timeModification: TimeModification | null = null
     private timeline: Timeline<World>
