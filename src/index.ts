@@ -1,5 +1,6 @@
 import Game from "./Game";
 import Canvas from "./common/Canvas";
+import Editor from "./Editor";
 
 window.onload = () => {
     Canvas.setup()
