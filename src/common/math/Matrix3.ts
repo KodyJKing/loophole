@@ -79,10 +79,22 @@ export default class Matrix3 {
             [ m21, m22, m23 ],
             [ m31, m32, m33 ],
         ]
-        let pad = l => s => range( l - s.toString().length ).map( e => " " ).join( "" ) + s
-        let max = rows.flat().map( x => x.toString().length ).reduce( ( a, b ) => Math.max( a, b ) )
-        let _pad = pad( max )
-        let result = rows.map( row => "| " + row.map( _pad ).join( " " ) + " |" ).join( "\n" )
+        let columnWidths = [
+            [ m11, m21, m31 ],
+            [ m12, m22, m32 ],
+            [ m13, m23, m33 ],
+        ].map(
+            column =>
+                column.map(
+                    e => e.toString().length
+                ).reduce(
+                    ( a, b ) => Math.max( a, b )
+                )
+        )
+        let pad = ( n: number, column: number ) => n.toString().padStart( columnWidths[ column ] )
+        let result = rows.map(
+            row => "| " + row.map( pad ).join( "  " ) + " |"
+        ).join( "\n" )
         console.log( result )
     }
 
