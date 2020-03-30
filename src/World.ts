@@ -1,7 +1,9 @@
-import Canvas from "./Canvas";
-import Tile from "./tiles/Tile";
-import Starfield from "./Starfield";
-import Entity from "./entities/Entity";
+import Canvas from "./common/Canvas"
+import Tile from "./tiles/Tile"
+import Starfield from "./Starfield"
+import Entity from "./entities/Entity"
+import Game from "./Game"
+import Matrix3 from "./common/math/Matrix3"
 
 type TileLayer = ( Tile | null )[]
 
@@ -11,14 +13,18 @@ export enum TileLayers {
     foreground
 }
 
+const zoom = 4
 export default class World {
     layers!: TileLayer[]
     entities!: Entity[]
-    backgroundTiles!: ( Tile | null )[]
+    blocked!: boolean[]
+    triggers!: { [ name: string ]: boolean }
 
     width!: number
     height!: number
+
     stars!: Starfield
+
     time = 0
 
     static create( width, height ) {
@@ -30,8 +36,10 @@ export default class World {
             new Array( width * height ),
             new Array( width * height )
         ]
-        result.backgroundTiles = new Array( width * height )
         result.entities = []
+        result.blocked = new Array( width * height )
+        for ( let i = 0; i < result.blocked.length; i++ ) result.blocked[ i ] = false
+        result.triggers = {}
         result.stars = Starfield.create()
         return result
     }
@@ -42,6 +50,12 @@ export default class World {
 
     get pixelHeight() {
         return this.height * Tile.width
+    }
+
+    transform() {
+        let { width, height } = Canvas.canvas
+        let { pixelWidth, pixelHeight } = this
+        return Matrix3.transformation( - pixelWidth / 2, - pixelHeight / 2, 0, zoom, zoom, width / 2, height / 2 )
     }
 
     inBounds( x, y ) {
@@ -71,8 +85,16 @@ export default class World {
         tiles[ this.index( x, y ) ] = null
     }
 
-    isEmpty( x, y, layer = TileLayers.center ) {
+    isAir( x, y, layer = TileLayers.center ) {
         return this.getTile( x, y, layer ) == null
+    }
+
+    block( x, y ) {
+        this.blocked[ this.index( x, y ) ] = true
+    }
+
+    isEmpty( x, y ) {
+        return this.isAir( x, y ) && !this.blocked[ this.index( x, y ) ]
     }
 
     addEntity( entity: Entity, x, y ) {
@@ -91,7 +113,7 @@ export default class World {
     }
 
     draw( partialSteps ) {
-        let { canvas, context: c, push, pop, background, scale } = Canvas
+        let { canvas, context: c, push, pop, background, scale, translate } = Canvas
         let { width, height } = canvas
 
         // background( "#0a0311" )
@@ -102,7 +124,7 @@ export default class World {
 
         const zoom = 4
         let { pixelWidth, pixelHeight } = this
-        push().translate( width / 2, height / 2 ).scale( zoom, zoom ).translate( - pixelWidth / 2, - pixelHeight / 2 )
+        push().transform( this.transform() )
         this.drawTiles( partialSteps, TileLayers.background )
         this.drawTiles( partialSteps, TileLayers.center )
         this.drawEntities( partialSteps )
@@ -126,7 +148,8 @@ export default class World {
 
     drawEntities( partialSteps ) {
         let { push, pop } = Canvas
-        for ( let entity of this.entities ) {
+        let entityRenderList = this.entities.slice().sort( ( a, b ) => a.layer - b.layer )
+        for ( let entity of entityRenderList ) {
             push().translate( entity.x * Tile.width, entity.y * Tile.width )
             entity.draw( partialSteps )
             pop()
@@ -142,8 +165,12 @@ export default class World {
                     tile.update( this, x, y )
             }
         }
-
-        for ( let entity of this.entities )
+        let currentEntities = this.entities.slice()
+        for ( let entity of currentEntities )
+            entity.block()
+        for ( let entity of currentEntities )
             entity.update()
+        for ( let i = 0; i < this.blocked.length; i++ )
+            this.blocked[ i ] = false
     }
 }

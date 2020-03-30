@@ -1,6 +1,6 @@
 import World from "../World";
-import Canvas from "../Canvas";
-import { getImage } from "../common";
+import Canvas from "../common/Canvas";
+import { getImage } from "../common/common";
 
 export default class Tile {
     static width = 32

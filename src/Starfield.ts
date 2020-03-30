@@ -1,6 +1,6 @@
-import { modulus } from "./common";
-import Canvas from "./Canvas";
-import { markStatic } from "./clone";
+import { modulus } from "./common/common";
+import Canvas from "./common/Canvas";
+import { markStatic } from "./common/clone";
 
 class Star {
     x: number

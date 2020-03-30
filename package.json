@@ -1,7 +1,7 @@
 {
     "name": "loophole",
     "version": "0.0.0",
-    "repository": "https://github.com/krisnye/glass-chess.git",
+    "repository": "https://github.com/KodyJKing/loophole.git",
     "author": "Kody King <kody.j.king@gmail.com>",
     "license": "none",
     "scripts": {
