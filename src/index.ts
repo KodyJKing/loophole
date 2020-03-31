@@ -1,9 +1,6 @@
 import Game from "./Game";
-import Canvas from "./common/Canvas";
-import Editor from "./Editor";
 
 window.onload = () => {
-    Canvas.setup()
     let game = new Game()
     let time = performance.now()
     function loop() {

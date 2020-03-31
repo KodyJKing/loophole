@@ -1,7 +1,7 @@
-import Game from "../Game";
-import World from "../World";
-import Entity from "./Entity";
-import { getImage } from "../common/common";
+import Game from "../Game"
+import World from "../World"
+import Entity from "./Entity"
+import { getImage } from "geode/lib/assets"
 
 export class EntityMover extends Entity {
 

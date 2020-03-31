@@ -1,9 +1,8 @@
-import Canvas from "./common/Canvas"
 import Tile from "./tiles/Tile"
 import Starfield from "./Starfield"
 import Entity from "./entities/Entity"
+import Matrix3 from "geode/lib/math/Matrix3"
 import Game from "./Game"
-import Matrix3 from "./common/math/Matrix3"
 
 type TileLayer = ( Tile | null )[]
 
@@ -13,7 +12,7 @@ export enum TileLayers {
     foreground
 }
 
-const zoom = 4
+const zoom = 2
 export default class World {
     layers!: TileLayer[]
     entities!: Entity[]
@@ -53,7 +52,8 @@ export default class World {
     }
 
     transform() {
-        let { width, height } = Canvas.canvas
+        let canvas = Game.instance.canvas
+        let { width, height } = canvas
         let { pixelWidth, pixelHeight } = this
         return Matrix3.transformation( - pixelWidth / 2, - pixelHeight / 2, 0, zoom, zoom, width / 2, height / 2 )
     }
@@ -113,46 +113,44 @@ export default class World {
     }
 
     draw( partialSteps ) {
-        let { canvas, context: c, push, pop, background, scale, translate } = Canvas
+        let canvas = Game.instance.canvas
         let { width, height } = canvas
 
-        // background( "#0a0311" )
-        background( "#151729" )
-        // background( "#434da1" )
+        // canvas.background( "#0a0311" )
+        canvas.background( "#151729" )
+        // canvas.background( "#434da1" )
 
         this.stars.draw( this.time + partialSteps )
 
-        const zoom = 4
-        let { pixelWidth, pixelHeight } = this
-        push().transform( this.transform() )
+        canvas.push().applyMatrix( this.transform() )
         this.drawTiles( partialSteps, TileLayers.background )
         this.drawTiles( partialSteps, TileLayers.center )
         this.drawEntities( partialSteps )
         this.drawTiles( partialSteps, TileLayers.foreground )
-        pop()
+        canvas.pop()
     }
 
     drawTiles( partialSteps, layer = TileLayers.center ) {
-        let { push, pop } = Canvas
+        let canvas = Game.instance.canvas
         for ( let y = 0; y < this.height; y++ ) {
             for ( let x = 0; x < this.width; x++ ) {
                 let tile = this.getTile( x, y, layer )
                 if ( tile ) {
-                    push().translate( x * Tile.width, y * Tile.width )
+                    canvas.push().translate( x * Tile.width, y * Tile.width )
                     tile.draw( this, x, y, partialSteps )
-                    pop()
+                    canvas.pop()
                 }
             }
         }
     }
 
     drawEntities( partialSteps ) {
-        let { push, pop } = Canvas
+        let canvas = Game.instance.canvas
         let entityRenderList = this.entities.slice().sort( ( a, b ) => a.layer - b.layer )
         for ( let entity of entityRenderList ) {
-            push().translate( entity.x * Tile.width, entity.y * Tile.width )
+            canvas.push().translate( entity.x * Tile.width, entity.y * Tile.width )
             entity.draw( partialSteps )
-            pop()
+            canvas.pop()
         }
     }
 

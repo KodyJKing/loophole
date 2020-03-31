@@ -1,7 +1,7 @@
 import Tile from "./Tile"
-import { getImage } from "../common/common"
-import Canvas from "../common/Canvas";
-import World from "../World";
+import World from "../World"
+import { getImage } from "geode/lib/assets"
+import Game from "../Game"
 
 export class TileGeneric extends Tile {
     name: string
@@ -11,19 +11,18 @@ export class TileGeneric extends Tile {
     }
     image( world: World, x, y, partialSteps ): HTMLImageElement | undefined { return getImage( this.name ) }
     draw( world: World, x, y, partialSteps ) {
-        let { imageAt } = Canvas
         let image = this.image( world, x, y, partialSteps )
         if ( !image ) return
-        let imageWidth = image.width / Tile.width
-        let imageHeight = image.height / Tile.width
-        let dx = x % imageWidth
-        let dy = y % imageHeight
-        imageAt(
-            image,
-            0, 0,
-            dx * Tile.width, dy * Tile.width,
-            Tile.width, Tile.width
-        )
+        Game.instance.canvas.image( image )
+        // let imageWidth = image.width / Tile.width
+        // let imageHeight = image.height / Tile.width
+        // let dx = x % imageWidth
+        // let dy = y % imageHeight
+        // Game.instance.canvas.partialImage(
+        //     image,
+        //     dx * Tile.width, dy * Tile.width,
+        //     Tile.width, Tile.width
+        // )
     }
 }
 

@@ -1,6 +1,6 @@
-import { modulus } from "./common/common";
-import Canvas from "./common/Canvas";
-import { markStatic } from "./common/clone";
+import { modulus } from "./common/common"
+import { markStatic } from "./common/clone"
+import Game from "./Game"
 
 class Star {
     x: number
@@ -34,14 +34,14 @@ export default class Starfield {
     }
 
     draw( time ) {
-        let { canvas, push, fillStyle } = Canvas
+        let canvas = Game.instance.canvas
         let { width, height } = canvas
         for ( let star of this.stars ) {
             let { x, y, z, phase } = star
             x *= width
             y *= height
             x = modulus( x - ( time / ( 1 + z ) ) * 200, width )
-            let w = 24 / ( z + 1 )
+            let w = 12 / ( z + 1 )
             let alpha = ( Math.cos( time + phase * Math.PI * 2 ) + 1 ) / 2
 
             // let angle = ( time + phase ) * Math.PI * 2 * 0.25
@@ -53,7 +53,7 @@ export default class Starfield {
             //     .fill()
             //     .pop()
 
-            fillStyle( "rgba(255, 255, 255, " + alpha + ")" )
+            canvas.fillStyle( "rgba(255, 255, 255, " + alpha + ")" )
                 .rect( x - w, y - w, w * 2, w * 2 )
                 .fill()
         }

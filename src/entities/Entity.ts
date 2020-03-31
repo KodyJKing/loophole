@@ -1,8 +1,7 @@
 import World from "../World"
-import Canvas from "../common/Canvas"
-import { getImage } from "../common/common"
 import Tile from "../tiles/Tile"
 import Game from "../Game"
+import { getImage } from "geode/lib/assets"
 
 export default class Entity {
     world!: World
@@ -44,13 +43,14 @@ export default class Entity {
     block() { }
 
     draw( partialSteps ) {
-        Canvas.push().translate( this.displacementX( partialSteps ), this.displacementY( partialSteps ) )
+        let canvas = Game.instance.canvas
+        canvas.push().translate( this.displacementX( partialSteps ), this.displacementY( partialSteps ) )
         this.drawAfterTranslation( partialSteps )
-        Canvas.pop()
+        canvas.pop()
     }
 
     drawAfterTranslation( partialSteps ) {
-        Canvas.image( this.image )
+        Game.instance.canvas.image( this.image )
     }
 
     get image(): HTMLImageElement | undefined { return getImage( this.constructor.name ) }

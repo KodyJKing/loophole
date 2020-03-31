@@ -1,21 +1,24 @@
-import Canvas from "./common/Canvas"
+// import Canvas from "./common/Canvas"
 import Timeline from "./Timeline"
 import { map0 } from "./maps"
 import World from "./World"
 import clone, { deepCompare } from "./common/clone"
-import { getImage } from "./common/common"
-import JumpTracker from "./common/JumpTracker"
+import JumpTracker from "./JumpTracker"
+import { getImage } from "geode/lib/assets"
+import Canvas from "geode/lib/graphics/Canvas"
 
 type TimeModification = { time: number, modifiedState: World }
 
 export default class Game {
     static instance: Game
+    canvas: Canvas
 
     constructor() {
         Game.instance = this
+        this.canvas = new Canvas( "canvas" )
         let world = map0()
         this.timeline = new Timeline( world, ( world: World ) => world.update() );
-        ( window as any ).timeline = this.timeline
+        // ( window as any ).timeline = this.timeline
     }
 
     get world() { return this.timeline.state as World }
@@ -26,14 +29,16 @@ export default class Game {
     }
 
     draw() {
-        Canvas.fitWindow()
-        Canvas.context.imageSmoothingEnabled = false
+        let { canvas } = this
+        canvas.fitWindow( 2 )
+        // canvas.scale( 0.5, 0.5 )
+        canvas.smooth( false )
         this.world.draw( this.partialSteps )
 
         if ( this.timeModification !== null ) {
             let img = getImage( "GuiTimeTravelIndicator" )
-            Canvas.context.globalAlpha = 0.5
-            Canvas.translate( Canvas.canvas.width / 2, Canvas.canvas.height / 4 )
+            canvas.context.globalAlpha = 0.5
+            canvas.translate( canvas.width / 2, canvas.height / 4 )
                 .scale( 4 * this.timeDirection, 4 )
                 .translate( - img.width / 2, - img.height / 2 )
                 .image( img, 0, 0 )

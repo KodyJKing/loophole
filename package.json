@@ -5,7 +5,7 @@
     "author": "Kody King <kody.j.king@gmail.com>",
     "license": "none",
     "scripts": {
-        "dev": "yarn install && yarn build",
+        "dev": "yarn install && yarn build && yarn link geode",
         "build": "tsc && yarn buildPeg",
         "watch": "tsc -w",
         "buildpeg": "pegjs -o src/vm/assemblyParser.js src/vm/assemblyParser.pegjs",
@@ -22,6 +22,7 @@
         "webpack-cli": "^3.3.5"
     },
     "dependencies": {
-        "express": "^4.17.1"
+        "express": "^4.17.1",
+        "geode": "https://github.com/KodyJKing/geode.git#1.0.0"
     }
 }

@@ -1,11 +1,10 @@
-import Canvas from "../common/Canvas"
-import { getImage } from "../common/common"
 import VM from "../vm/VM"
 import Entity from "./Entity"
 import Tile from "../tiles/Tile"
 import Game from "../Game"
 import World from "../World"
 import clone, { deepCompare } from "../common/clone"
+import { getImage } from "geode/lib/assets"
 
 export class EntityBot extends Entity {
     vm!: VM
@@ -109,23 +108,20 @@ export class EntityBot extends Entity {
         let time = world.time + partialSteps
         let frame = ( time / 3 ) % 1 >= 0.5 ? 1 : 0
 
-        let { push, pop, translate, scale, imageAt } = Canvas
-        push()
-        if ( this.direction == -1 ) {
-            scale( -1, 1 )
-            translate( -Tile.width, 0 )
-        }
+        let canvas = Game.instance.canvas
+        canvas.push()
+        if ( this.direction == -1 )
+            canvas.scale( -1, 1 ).translate( -Tile.width, 0 )
 
-        let alpha = this.alpha( partialSteps )
-        Canvas.context.globalAlpha = alpha
-        imageAt( sheet, 0, 0, 0, frame * Tile.width, Tile.width, Tile.width )
+        let a = this.alpha( partialSteps )
+        canvas.alpha( a )
+        canvas.imageSource( 0, frame * Tile.width, Tile.width, Tile.width ).partialImage( sheet )
+        let lightness = ( 1 - a ) * a
+        canvas.alpha( lightness )
+        canvas.composition( "xor" )
+        canvas.imageSource( 0, frame * Tile.width, Tile.width, Tile.width ).partialImage( sheet )
 
-        let lightness = ( 1 - alpha ) * alpha
-        Canvas.context.globalAlpha = lightness
-        Canvas.context.globalCompositeOperation = "xor"
-        imageAt( sheet, 0, 0, 0, frame * Tile.width, Tile.width, Tile.width )
-
-        pop()
+        canvas.pop()
     }
 
     update() {

@@ -1,9 +1,7 @@
 import Entity from "./Entity"
-import { getImage } from "../common/common"
 import Tile from "../tiles/Tile"
-import Canvas from "../common/Canvas"
-import { clamp } from "../common/math/Math"
-import { TileThruster } from "../tiles/Tiles"
+import { getImage } from "geode/lib/assets"
+import Game from "../Game"
 
 export default class EntityDoor extends Entity {
     extension: number = 0
@@ -12,28 +10,28 @@ export default class EntityDoor extends Entity {
 
     drawAfterTranslation( partialSteps ) {
         let sheet = getImage( "EntityDoor" )
-        let { push, pop, translate, scale, imageAt, rect } = Canvas
+        let canvas = Game.instance.canvas
         let { extension, direction } = this
 
         let w = Tile.width
 
         // Upper segment.
-        imageAt( sheet, 0, 0, 0, 0, w, w * 2 )
+        canvas.imageSource( 0, 0, w, w * 2 ).partialImage( sheet )
 
         // Moving segment.
-        push()
-        rect( 0, 0, w, w * 2 )
+        canvas.push()
+        canvas.rect( 0, 0, w, w * 2 )
         let motion = extension + direction * partialSteps
-        Canvas.context.clip()
-        translate( 0, motion * 20 )
-        imageAt( sheet, 0, 0, w, 0, w, w * 2 )
-        pop()
+        canvas.context.clip()
+        canvas.translate( 0, motion * 20 )
+        canvas.imageSource( w, 0, w, w * 2 ).partialImage( sheet )
+        canvas.pop()
 
         // // Light
         if ( this.world.triggers[ this.triggerName ] )
-            imageAt( sheet, 0, 0, w * 2, w, w, w )
+            canvas.imageSource( w * 2, w, w, w ).partialImage( sheet )
         else
-            imageAt( sheet, 0, 0, w * 2, 0, w, w )
+            canvas.imageSource( w * 2, 0, w, w ).partialImage( sheet )
     }
 
     block() {
