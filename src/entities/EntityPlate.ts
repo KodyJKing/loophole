@@ -3,6 +3,7 @@ import Entity from "./Entity"
 import { EntityBot } from "./EntityBot"
 import { getImage } from "geode/lib/assets"
 import Game from "../Game"
+import Canvas from "geode/lib/graphics/Canvas"
 
 export default class EntityPlate extends Entity {
     active = false
@@ -21,9 +22,9 @@ export default class EntityPlate extends Entity {
         }
     }
 
-    drawAfterTranslation( partialSteps ) {
+    drawAfterTranslation( canvas: Canvas, partialSteps: number ) {
         let sheet = getImage( "EntityPlate" )
         let frame = this.active ? 1 : 0
-        Game.instance.canvas.imageSource( 0, frame * Tile.width, Tile.width, Tile.width ).partialImage( sheet )
+        canvas.imageSource( 0, frame * Tile.width, Tile.width, Tile.width ).partialImage( sheet )
     }
 }

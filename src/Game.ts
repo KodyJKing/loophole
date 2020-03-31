@@ -31,14 +31,13 @@ export default class Game {
     draw() {
         let { canvas } = this
         canvas.fitWindow( 2 )
-        // canvas.scale( 0.5, 0.5 )
         canvas.smooth( false )
-        this.world.draw( this.partialSteps )
+        this.world.draw( this.canvas, this.partialSteps )
 
         if ( this.timeModification !== null ) {
             let img = getImage( "GuiTimeTravelIndicator" )
-            canvas.context.globalAlpha = 0.5
-            canvas.translate( canvas.width / 2, canvas.height / 4 )
+            canvas.alpha( 0.5 )
+                .translate( canvas.width / 2, canvas.height / 4 )
                 .scale( 2 * this.timeDirection, 2 )
                 .translate( - img.width / 2, - img.height / 2 )
                 .image( img, 0, 0 )

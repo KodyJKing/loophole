@@ -5,6 +5,7 @@ import Game from "../Game"
 import World from "../World"
 import clone, { deepCompare } from "../common/clone"
 import { getImage } from "geode/lib/assets"
+import Canvas from "geode/lib/graphics/Canvas"
 
 export class EntityBot extends Entity {
     vm!: VM
@@ -92,7 +93,7 @@ export class EntityBot extends Entity {
         this.move( this.direction, dy )
     }
 
-    alpha( partialSteps ) {
+    alpha( partialSteps: number ) {
         if ( this.targetTime == null ) {
             let arivalCountdown = Math.max( this.arivalCountdown - partialSteps, 0 )
             return ( 1 - arivalCountdown / this.timeTravelDelay )
@@ -102,13 +103,12 @@ export class EntityBot extends Entity {
         }
     }
 
-    drawAfterTranslation( partialSteps ) {
+    drawAfterTranslation( canvas: Canvas, partialSteps: number ) {
         let { world, x, y } = this
         let sheet = getImage( "EntityBot" )
         let time = world.time + partialSteps
         let frame = ( time / 3 ) % 1 >= 0.5 ? 1 : 0
 
-        let canvas = Game.instance.canvas
         canvas.push()
         if ( this.direction == -1 )
             canvas.scale( -1, 1 ).translate( -Tile.width, 0 )

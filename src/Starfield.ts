@@ -1,6 +1,7 @@
 import { modulus } from "./common/common"
 import { markStatic } from "./common/clone"
 import Game from "./Game"
+import Canvas from "geode/lib/graphics/Canvas"
 
 class Star {
     x: number
@@ -33,8 +34,7 @@ export default class Starfield {
         return result
     }
 
-    draw( time ) {
-        let canvas = Game.instance.canvas
+    draw( canvas: Canvas, time: number ) {
         let { width, height } = canvas
         for ( let star of this.stars ) {
             let { x, y, z, phase } = star

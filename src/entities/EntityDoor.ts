@@ -2,15 +2,15 @@ import Entity from "./Entity"
 import Tile from "../tiles/Tile"
 import { getImage } from "geode/lib/assets"
 import Game from "../Game"
+import Canvas from "geode/lib/graphics/Canvas"
 
 export default class EntityDoor extends Entity {
     extension: number = 0
     direction = 0
     triggerName = "plateActive"
 
-    drawAfterTranslation( partialSteps ) {
+    drawAfterTranslation( canvas: Canvas, partialSteps: number ) {
         let sheet = getImage( "EntityDoor" )
-        let canvas = Game.instance.canvas
         let { extension, direction } = this
 
         let w = Tile.width
