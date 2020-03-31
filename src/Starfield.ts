@@ -40,7 +40,7 @@ export default class Starfield {
             let { x, y, z, phase } = star
             x *= width
             y *= height
-            x = modulus( x - ( time / ( 1 + z ) ) * 200, width )
+            x = modulus( x - ( time / ( 1 + z ) ) * 100, width )
             let w = 12 / ( z + 1 )
             let alpha = ( Math.cos( time + phase * Math.PI * 2 ) + 1 ) / 2
 

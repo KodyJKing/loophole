@@ -39,7 +39,7 @@ export default class Game {
             let img = getImage( "GuiTimeTravelIndicator" )
             canvas.context.globalAlpha = 0.5
             canvas.translate( canvas.width / 2, canvas.height / 4 )
-                .scale( 4 * this.timeDirection, 4 )
+                .scale( 2 * this.timeDirection, 2 )
                 .translate( - img.width / 2, - img.height / 2 )
                 .image( img, 0, 0 )
         }
