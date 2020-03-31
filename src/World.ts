@@ -4,6 +4,9 @@ import Entity from "./entities/Entity"
 import Matrix3 from "geode/lib/math/Matrix3"
 import Game from "./Game"
 import Canvas from "geode/lib/graphics/Canvas"
+import Input from "geode/lib/Input"
+import Vector2 from "geode/lib/math/Vector2"
+import { TilePanel } from "./tiles/Tiles"
 
 type TileLayer = ( Tile | null )[]
 
@@ -113,20 +116,26 @@ export default class World {
     }
 
     draw( canvas: Canvas, partialSteps: number ) {
-        let { width, height } = canvas
-
         // canvas.background( "#0a0311" )
         // canvas.background( "#434da1" )
         canvas.background( "#151729" )
 
         this.stars.draw( canvas, this.time + partialSteps )
 
-        canvas.push().applyMatrix( this.transform( canvas ) )
+        let transform = this.transform( canvas )
+        let mPos = transform.inverse().multiplyVec2( Input.mouseScreenPosition( canvas ) ).divide( Tile.width ).floor()
+
+        canvas.push().applyMatrix( transform )
         this.drawTiles( canvas, partialSteps, TileLayers.background )
         this.drawTiles( canvas, partialSteps, TileLayers.center )
         this.drawEntities( canvas, partialSteps )
         this.drawTiles( canvas, partialSteps, TileLayers.foreground )
+        canvas.vrect( mPos.multiply( Tile.width ), new Vector2( Tile.width, Tile.width ) ).strokeStyle( "#FF6F6F" ).stroke()
         canvas.pop()
+
+        // if ( Input.buttons.Mouse0 )
+        //     this.setTile( mPos.x, mPos.y, TilePanel() )
+
     }
 
     drawTiles( canvas: Canvas, partialSteps: number, layer = TileLayers.center ) {

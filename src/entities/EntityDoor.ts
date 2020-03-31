@@ -22,7 +22,7 @@ export default class EntityDoor extends Entity {
         canvas.push()
         canvas.rect( 0, 0, w, w * 2 )
         let motion = extension + direction * partialSteps
-        canvas.context.clip()
+        canvas.clip()
         canvas.translate( 0, motion * 20 )
         canvas.imageSource( w, 0, w, w * 2 ).partialImage( sheet )
         canvas.pop()
