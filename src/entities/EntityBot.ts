@@ -59,36 +59,36 @@ export class EntityBot extends Entity {
         return result
     }
 
-    drive( dx: number ) {
-        if ( !this.onGround() )
+    drive( world: World, dx: number ) {
+        if ( !this.onGround( world ) )
             return
-        let { world, x, y } = this
+        let { x, y } = this
         this.direction = Math.sign( dx )
         let dy = world.isEmpty( x + this.direction, y ) ? 0 : -1
-        this.move( this.direction, dy )
+        this.move( world, this.direction, dy )
     }
 
-    alpha( partialSteps: number ) {
+    alpha( fracTime: number ) {
         if ( this.targetTime == null ) {
-            let arivalCountdown = Math.max( this.arivalCountdown - partialSteps, 0 )
+            let arivalCountdown = Math.max( this.arivalCountdown - fracTime, 0 )
             return ( 1 - arivalCountdown / this.timeTravelDelay )
         } else {
-            let timeTravelCountdown = Math.max( this.timeTravelCountdown - partialSteps, 0 )
+            let timeTravelCountdown = Math.max( this.timeTravelCountdown - fracTime, 0 )
             return timeTravelCountdown / this.timeTravelDelay
         }
     }
 
-    drawAfterTranslation( canvas: Canvas, partialSteps: number ) {
-        let { world, x, y } = this
+    drawAfterTranslation( world: World, canvas: Canvas, fracTime: number ) {
+        let { x, y } = this
         let sheet = getImage( "EntityBot" )
-        let time = world.time + partialSteps
+        let time = world.time + fracTime
         let frame = ( time / 3 ) % 1 >= 0.5 ? 1 : 0
 
         canvas.push()
         if ( this.direction == -1 )
             canvas.scale( -1, 1 ).translate( -Tile.width, 0 )
 
-        let a = this.alpha( partialSteps )
+        let a = this.alpha( fracTime )
         canvas.alpha( a )
         canvas.imageSource( 0, frame * Tile.width, Tile.width, Tile.width ).partialImage( sheet )
         let lightness = ( 1 - a ) * a
@@ -99,20 +99,20 @@ export class EntityBot extends Entity {
         canvas.pop()
     }
 
-    update() {
-        super.update()
+    update( world: World ) {
+        super.update( world )
         this.timeout = Math.max( 0, this.timeout - 1 )
-        this.runVM()
-        this.move( 0, 1 )
-        this.maybeTimeTravel()
+        this.runVM( world )
+        this.move( world, 0, 1 )
+        this.maybeTimeTravel( world )
         this.timeTravelCountdown--
         this.arivalCountdown--
     }
 
-    runVM() {
+    runVM( world: World ) {
         let input = ( port: number ) => {
             switch ( port ) {
-                case 0: return this.onGround() ? 1 : 0
+                case 0: return this.onGround( world ) ? 1 : 0
             }
             return 0
         }
@@ -120,13 +120,13 @@ export class EntityBot extends Entity {
         let output = ( port: number, message: number ) => {
             switch ( port ) {
                 case 0: {
-                    this.drive( message )
+                    this.drive( world, message )
                     // this.timeout = Math.abs( this.dx ) + Math.abs( this.dy )
                     this.timeout = 1 + Math.abs( this.dy )
                     break
                 }
                 case 1: {
-                    this.targetTime = this.world.time + message
+                    this.targetTime = world.time + message
                     this.timeTravelCountdown = this.timeTravelDelay
                     this.timeout = this.timeTravelDelay + 1
                     break
@@ -138,7 +138,7 @@ export class EntityBot extends Entity {
             this.vm.step( input, output )
     }
 
-    maybeTimeTravel() {
+    maybeTimeTravel( world: World ) {
         if ( this.targetTime == null || this.timeTravelCountdown > 1 )
             return
 
@@ -148,10 +148,7 @@ export class EntityBot extends Entity {
         Game.instance.modifyWorldStateAtTime(
             time,
             ( world: World ) => {
-                let thisWorld = this.world;
-                ( this as any ).world = null
                 let copy = clone( this )
-                this.world = thisWorld
 
                 copy.arivalCountdown = this.timeTravelDelay
 
@@ -167,6 +164,6 @@ export class EntityBot extends Entity {
             }
         )
 
-        this.world.removeEntity( this )
+        world.removeEntity( this )
     }
 }

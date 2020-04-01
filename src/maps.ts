@@ -46,7 +46,7 @@ export function map0() {
     world.addEntity( new EntityPlate(), 12, 12 )
 
     let doorX = 16
-    world.addEntity( new EntityDoor, doorX, 11 )
+    world.addEntity( new EntityDoor(), doorX, 11 )
     for ( let i = 10; i >= 7; i-- )
         world.setTile( doorX, i, TilePanel )
     for ( let i = doorX + 1; i < world.width; i++ )

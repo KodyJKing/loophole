@@ -17,8 +17,7 @@ export default class Game {
         Game.instance = this
         this.canvas = new Canvas( "canvas" )
         let world = map0()
-        this.timeline = new Timeline( world, ( world: World ) => world.update() );
-        // ( window as any ).timeline = this.timeline
+        this.timeline = new Timeline( world, ( world: World ) => world.update() )
     }
 
     get world() { return this.timeline.state as World }
@@ -32,7 +31,7 @@ export default class Game {
         let { canvas } = this
         canvas.fitWindow( 2 )
         canvas.smooth( false )
-        this.world.draw( this.canvas, this.partialSteps )
+        this.world.draw( this.canvas, this.fracTime )
 
         if ( this.timeModification !== null ) {
             let img = getImage( "GuiTimeTravelIndicator" )
@@ -57,7 +56,7 @@ export default class Game {
     time = 0
 
     get speedUp() { return 1 - this.slowDown }
-    get partialSteps() { return this.time % 1 }
+    get fracTime() { return this.time % 1 }
     get timeDirection() {
         return this.timeModification !== null ?
             Math.sign( this.timeModification.time - this.time ) :

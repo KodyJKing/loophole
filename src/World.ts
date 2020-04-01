@@ -112,9 +112,8 @@ export default class World {
         return this.isAir( x, y ) && !this.blocked[ this.index( x, y ) ]
     }
 
-    addEntity( entity: Entity, x, y ) {
+    addEntity( entity: Entity, x: number, y: number ) {
         this.entities.push( entity )
-        entity.world = this
         entity.x = x
         entity.y = y
     }
@@ -127,41 +126,41 @@ export default class World {
         }
     }
 
-    draw( canvas: Canvas, partialSteps: number ) {
+    draw( canvas: Canvas, fracTime: number ) {
         // canvas.background( "#0a0311" )
         // canvas.background( "#434da1" )
         canvas.background( "#151729" )
 
-        this.stars.draw( canvas, this.time + partialSteps )
+        this.stars.draw( canvas, this.time + fracTime )
 
         let transform = this.transform( canvas )
 
         canvas.push().applyMatrix( transform )
-        this.drawTiles( canvas, partialSteps, TileLayers.background )
-        this.drawTiles( canvas, partialSteps, TileLayers.center )
-        this.drawEntities( canvas, partialSteps )
-        this.drawTiles( canvas, partialSteps, TileLayers.foreground )
+        this.drawTiles( canvas, fracTime, TileLayers.background )
+        this.drawTiles( canvas, fracTime, TileLayers.center )
+        this.drawEntities( canvas, fracTime )
+        this.drawTiles( canvas, fracTime, TileLayers.foreground )
         canvas.pop()
     }
 
-    drawTiles( canvas: Canvas, partialSteps: number, layer = TileLayers.center ) {
+    drawTiles( canvas: Canvas, fracTime: number, layer = TileLayers.center ) {
         for ( let y = 0; y < this.height; y++ ) {
             for ( let x = 0; x < this.width; x++ ) {
                 let tile = this.getTile( x, y, layer )
                 if ( tile ) {
                     canvas.push().translate( x * Tile.width, y * Tile.width )
-                    tile.draw( this, x, y, canvas, partialSteps )
+                    tile.draw( this, x, y, canvas, fracTime )
                     canvas.pop()
                 }
             }
         }
     }
 
-    drawEntities( canvas: Canvas, partialSteps: number ) {
+    drawEntities( canvas: Canvas, fracTime: number ) {
         let entityRenderList = this.entities.slice().sort( ( a, b ) => a.layer - b.layer )
         for ( let entity of entityRenderList ) {
             canvas.push().translate( entity.x * Tile.width, entity.y * Tile.width )
-            entity.draw( canvas, partialSteps )
+            entity.draw( this, canvas, fracTime )
             canvas.pop()
         }
     }
@@ -177,9 +176,9 @@ export default class World {
         // }
         let currentEntities = this.entities.slice()
         for ( let entity of currentEntities )
-            entity.block()
+            entity.block( this )
         for ( let entity of currentEntities )
-            entity.update()
+            entity.update( this )
         for ( let i = 0; i < this.blocked.length; i++ )
             this.blocked[ i ] = false
     }

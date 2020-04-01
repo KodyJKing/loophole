@@ -7,19 +7,19 @@ export class EntityMover extends Entity {
 
     direction = 1
 
-    update() {
-        super.update()
-        let { world, x, y } = this
+    update( world: World ) {
+        super.update( world )
+        let { x, y } = this
         let { time } = world
         if ( time % 1 != 0 )
             return
         if ( !world.isEmpty( x, y + this.direction ) )
             this.direction *= -1
-        this.move( 0, this.direction )
+        this.move( world, 0, this.direction )
     }
 
-    block() {
-        let { world, x, y } = this
+    block( world: World ) {
+        let { x, y } = this
         world.block( x, y )
     }
 

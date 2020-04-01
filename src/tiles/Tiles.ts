@@ -9,9 +9,9 @@ export class TileGeneric extends Tile {
         super()
         this.name = name
     }
-    image( world: World, x: number, y: number, partialSteps: number ): HTMLImageElement | undefined { return getImage( this.name ) }
-    draw( world: World, x: number, y: number, canvas: Canvas, partialSteps: number ) {
-        let image = this.image( world, x, y, partialSteps )
+    image( world: World, x: number, y: number, fracTime: number ): HTMLImageElement | undefined { return getImage( this.name ) }
+    draw( world: World, x: number, y: number, canvas: Canvas, fracTime: number ) {
+        let image = this.image( world, x, y, fracTime )
         if ( !image ) return
         let imageWidth = image.width / Tile.width
         let imageHeight = image.height / Tile.width
