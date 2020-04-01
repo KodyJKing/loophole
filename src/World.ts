@@ -39,16 +39,22 @@ export default class World {
             new Array( width * height )
         ]
         result.entities = []
-        result.init()
         return result
     }
 
-    init() {
+    initDraw() {
+        this.stars = Starfield.create()
+        for ( let entity of this.entities )
+            entity.initDraw()
+    }
+
+    initPlay() {
         let { width, height } = this
         this.blocked = new Array( width * height )
         for ( let i = 0; i < this.blocked.length; i++ ) this.blocked[ i ] = false
         this.triggers = {}
-        this.stars = Starfield.create()
+        for ( let entity of this.entities )
+            entity.initPlay()
     }
 
     get pixelWidth() {

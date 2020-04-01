@@ -8,18 +8,16 @@ import { getImage } from "geode/lib/assets"
 import Canvas from "geode/lib/graphics/Canvas"
 
 export class EntityBot extends Entity {
-    vm!: VM
+    vm?: VM
     direction = 1
     timeout = 0
 
-    targetTime: number | null = null
+    targetTime?: number
     timeTravelCountdown = 0
     timeTravelDelay = 2
     arivalCountdown = 0
 
-    static create() {
-        let result = new EntityBot()
-
+    initPlay() {
         let source = `
             #def driveport 0
             #def timetravelport 1
@@ -52,11 +50,7 @@ export class EntityBot extends Entity {
                 mov 5 ix
                 call drive
         `
-
-        let vm = VM.create( source, 1024 )
-        result.vm = vm
-
-        return result
+        this.vm = VM.create( source, 1024 )
     }
 
     drive( world: World, dx: number ) {
@@ -69,7 +63,7 @@ export class EntityBot extends Entity {
     }
 
     alpha( fracTime: number ) {
-        if ( this.targetTime == null ) {
+        if ( this.targetTime == undefined ) {
             let arivalCountdown = Math.max( this.arivalCountdown - fracTime, 0 )
             return ( 1 - arivalCountdown / this.timeTravelDelay )
         } else {
@@ -79,7 +73,6 @@ export class EntityBot extends Entity {
     }
 
     drawAfterTranslation( world: World, canvas: Canvas, fracTime: number ) {
-        let { x, y } = this
         let sheet = getImage( "EntityBot" )
         let time = world.time + fracTime
         let frame = ( time / 3 ) % 1 >= 0.5 ? 1 : 0
@@ -110,6 +103,7 @@ export class EntityBot extends Entity {
     }
 
     runVM( world: World ) {
+        if ( !this.vm ) return
         let input = ( port: number ) => {
             switch ( port ) {
                 case 0: return this.onGround( world ) ? 1 : 0
@@ -121,7 +115,6 @@ export class EntityBot extends Entity {
             switch ( port ) {
                 case 0: {
                     this.drive( world, message )
-                    // this.timeout = Math.abs( this.dx ) + Math.abs( this.dy )
                     this.timeout = 1 + Math.abs( this.dy )
                     break
                 }
@@ -139,11 +132,11 @@ export class EntityBot extends Entity {
     }
 
     maybeTimeTravel( world: World ) {
-        if ( this.targetTime == null || this.timeTravelCountdown > 1 )
+        if ( this.targetTime == undefined || this.timeTravelCountdown > 1 )
             return
 
         let time = this.targetTime
-        this.targetTime = null
+        this.targetTime = undefined
 
         Game.instance.modifyWorldStateAtTime(
             time,

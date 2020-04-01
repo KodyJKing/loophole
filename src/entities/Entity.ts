@@ -16,6 +16,9 @@ export default class Entity {
     pixelX( fracTime: number ) { return this.x * Tile.width + this.displacementX( fracTime ) }
     pixelY( fracTime: number ) { return this.y * Tile.width + this.displacementY( fracTime ) }
 
+    initDraw() { }
+    initPlay() { }
+
     move( world: World, dx: number, dy: number ) {
         let { x, y } = this
         let blocked = !world.isEmpty( x + dx, y + dy )

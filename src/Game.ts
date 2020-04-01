@@ -17,6 +17,8 @@ export default class Game {
         Game.instance = this
         this.canvas = new Canvas( "canvas" )
         let world = map0()
+        world.initDraw()
+        world.initPlay()
         this.timeline = new Timeline( world, ( world: World ) => world.update() )
     }
 

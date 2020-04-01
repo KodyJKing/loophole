@@ -41,7 +41,7 @@ export function map0() {
         world.setTile( 3, y, TileLadder )
     }
 
-    world.addEntity( EntityBot.create(), 5, 12 )
+    world.addEntity( new EntityBot(), 5, 12 )
 
     world.addEntity( new EntityPlate(), 12, 12 )
 
