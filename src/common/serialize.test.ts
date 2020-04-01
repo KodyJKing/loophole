@@ -1,29 +1,36 @@
 import test from "ava"
-import { serialize, deserialize, serialClone } from "./serialze";
-
+import { serialize, deserialize, serializeField, serializeClass } from "./serialize"
 
 test( "serialize", t => {
+    @serializeClass
     class Foo {
+        @serializeField
         bar = "bar"
-        foo = 100
+        @serializeField
+        foo = [ 1, 2, 3 ]
     }
 
+    @serializeClass
     class Bar {
+        @serializeField
         baz = "baz"
         qux = true
     }
 
     let foo = new Foo()
     let bar = new Bar()
-    let obj1 = { foo, bar }
-    let str = serialize( obj1, 2 )
-    console.log( str )
+    let preObject = { foo, bar }
+    let str = serialize( preObject )
+    let expected = '{"types":["Object","Foo","Array","Bar"],"objects":[{"foo":{"ref":1},"bar":{"ref":3}},{"bar":"bar","foo":{"ref":2}},[1,2,3],{"baz":"baz"}]}'
+    t.deepEqual( str, expected )
 
-    let obj2 = deserialize( str )
-    console.log( obj2 )
+    let postObject = deserialize( str )
+    t.deepEqual( postObject, preObject )
 
-    let obj3 = serialClone( obj1 )
-    console.log( obj3 )
-
-    t.pass()
+    // Circularity
+    let a: any = {}
+    let b: any = {}
+    a.b = b
+    b.a = a
+    t.deepEqual( b, deserialize( serialize( b ) ) )
 } )
