@@ -6,9 +6,8 @@ import Game from "./Game"
 import Canvas from "geode/lib/graphics/Canvas"
 import Input from "geode/lib/Input"
 import Vector2 from "geode/lib/math/Vector2"
-import { TilePanel } from "./tiles/Tiles"
 
-type TileLayer = ( Tile | null )[]
+type TileLayer = ( Tile | undefined )[]
 
 export enum TileLayers {
     background,
@@ -40,11 +39,16 @@ export default class World {
             new Array( width * height )
         ]
         result.entities = []
-        result.blocked = new Array( width * height )
-        for ( let i = 0; i < result.blocked.length; i++ ) result.blocked[ i ] = false
-        result.triggers = {}
-        result.stars = Starfield.create()
+        result.init()
         return result
+    }
+
+    init() {
+        let { width, height } = this
+        this.blocked = new Array( width * height )
+        for ( let i = 0; i < this.blocked.length; i++ ) this.blocked[ i ] = false
+        this.triggers = {}
+        this.stars = Starfield.create()
     }
 
     get pixelWidth() {
@@ -59,6 +63,14 @@ export default class World {
         let { width, height } = canvas
         let { pixelWidth, pixelHeight } = this
         return Matrix3.transformation( - pixelWidth / 2, - pixelHeight / 2, 0, zoom, zoom, width / 2, height / 2 )
+    }
+
+    screenSpaceToBlockSpace( canvas: Canvas, v: Vector2 ) {
+        return this.transform( canvas ).inverse().multiplyVec2( v ).divide( Tile.width )
+    }
+
+    blockSpaceToScreenSpace( canvas: Canvas, v: Vector2 ) {
+        return this.transform( canvas ).multiplyVec2( v.multiply( Tile.width ) )
     }
 
     inBounds( x, y ) {
@@ -85,11 +97,11 @@ export default class World {
 
     remove( x, y, layer = TileLayers.center ) {
         let tiles = this.layers[ layer ]
-        tiles[ this.index( x, y ) ] = null
+        tiles[ this.index( x, y ) ] = undefined
     }
 
     isAir( x, y, layer = TileLayers.center ) {
-        return this.getTile( x, y, layer ) == null
+        return this.getTile( x, y, layer ) == undefined
     }
 
     block( x, y ) {
@@ -123,19 +135,13 @@ export default class World {
         this.stars.draw( canvas, this.time + partialSteps )
 
         let transform = this.transform( canvas )
-        let mPos = transform.inverse().multiplyVec2( Input.mouseScreenPosition( canvas ) ).divide( Tile.width ).floor()
 
         canvas.push().applyMatrix( transform )
         this.drawTiles( canvas, partialSteps, TileLayers.background )
         this.drawTiles( canvas, partialSteps, TileLayers.center )
         this.drawEntities( canvas, partialSteps )
         this.drawTiles( canvas, partialSteps, TileLayers.foreground )
-        canvas.vrect( mPos.multiply( Tile.width ), new Vector2( Tile.width, Tile.width ) ).strokeStyle( "#FF6F6F" ).stroke()
         canvas.pop()
-
-        // if ( Input.buttons.Mouse0 )
-        //     this.setTile( mPos.x, mPos.y, TilePanel() )
-
     }
 
     drawTiles( canvas: Canvas, partialSteps: number, layer = TileLayers.center ) {
@@ -162,13 +168,13 @@ export default class World {
 
     update() {
         this.time++
-        for ( let y = 0; y < this.height; y++ ) {
-            for ( let x = 0; x < this.width; x++ ) {
-                let tile = this.getTile( x, y )
-                if ( tile )
-                    tile.update( this, x, y )
-            }
-        }
+        // for ( let y = 0; y < this.height; y++ ) {
+        //     for ( let x = 0; x < this.width; x++ ) {
+        //         let tile = this.getTile( x, y )
+        //         if ( tile )
+        //             tile.update( this, x, y )
+        //     }
+        // }
         let currentEntities = this.entities.slice()
         for ( let entity of currentEntities )
             entity.block()
