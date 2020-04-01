@@ -18,22 +18,21 @@ export enum Registers {
 
 const registerCount = Object.keys( Registers ).length / 2
 
-type IO = { on: ( port: number, message: number ) => void, in: ( port: number ) => number }
+export type inputHandler = ( port: number ) => number
+export type outputHandler = ( port: number, message: number ) => void
 
 export default class VM {
     counter!: number
     program!: number[]
     memory!: number[]
     registers!: number[]
-    io!: IO | undefined
 
-    static create( source: string, memory: number, io?: IO ) {
+    static create( source: string, memory: number ) {
         let result = new VM()
         result.counter = 0
         result.program = assemble( source )
         result.memory = new Array( memory ).fill( 0 )
         result.registers = new Array( registerCount ).fill( 0 )
-        result.io = io
         return result
     }
 
@@ -81,7 +80,7 @@ export default class VM {
                 return this.consume()
 
             default:
-                throw new Error( `Unrecognized rval type ${ rvalType } at ${ this.counter }` )
+                throw new Error( `Unrecognized rval type ${rvalType} at ${this.counter}` )
         }
     }
 
@@ -114,26 +113,26 @@ export default class VM {
             }
 
             default:
-                throw new Error( `Unrecognized lval type ${ lvalType } at ${ this.counter }` )
+                throw new Error( `Unrecognized lval type ${lvalType} at ${this.counter}` )
         }
     }
 
-    step() {
+    step( input?: inputHandler, output?: outputHandler ) {
         if ( !this.running() )
             return
         let instructionCode = this.consume()
         let instruction = getInstruction( instructionCode )
         if ( instruction )
-            instruction( this )
+            instruction( this, input, output )
         else
-            throw new Error( `Unknown instruction code ${ instructionCode } at ${ this.counter - 1 }` )
+            throw new Error( `Unknown instruction code ${instructionCode} at ${this.counter - 1}` )
     }
 
     running(): boolean {
         return this.counter < this.program.length
     }
 
-    run() {
-        while ( this.running() ) { this.step() }
+    run( input?: inputHandler, output?: outputHandler ) {
+        while ( this.running() ) { this.step( input, output ) }
     }
 }

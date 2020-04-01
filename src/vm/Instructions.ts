@@ -1,6 +1,6 @@
-import VM, { Registers } from "./VM"
+import VM, { Registers, inputHandler, outputHandler } from "./VM"
 
-type Instruction = ( ( vm: VM ) => void ) & { code: number }
+type Instruction = ( ( vm: VM, input?: inputHandler, output?: outputHandler ) => void ) & { code: number }
 
 function unary( vm: VM, ev ) {
     vm.setOperand( ev( vm.getOperand() ) )
@@ -65,17 +65,17 @@ const Instructions = {
     div( vm: VM ) { binary( vm, ( x, y ) => x / y ) },
     and( vm: VM ) { binary( vm, ( x, y ) => x & y ) },
     or( vm: VM ) { binary( vm, ( x, y ) => x | y ) },
-    out( vm: VM ) {
+    out( vm: VM, input?: inputHandler, output?: outputHandler ) {
         let port = vm.getOperand()
         let message = vm.getOperand()
-        if ( vm.io )
-            vm.io.on( port, message )
+        if ( output )
+            output( port, message )
     },
-    in( vm: VM ) {
+    in( vm: VM, input?: inputHandler, output?: outputHandler ) {
         let port = vm.getOperand()
         let result = 0
-        if ( vm.io )
-            result = vm.io.in( port )
+        if ( input )
+            result = input( port )
         vm.setOperand( result )
     },
     print( vm: VM ) { console.log( vm.getOperand() ) },

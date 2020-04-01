@@ -53,35 +53,10 @@ export class EntityBot extends Entity {
                 call drive
         `
 
-        let vm = VM.create( source, 1024, result )
+        let vm = VM.create( source, 1024 )
         result.vm = vm
 
         return result
-    }
-
-    on( port: number, message: number ) {
-        switch ( port ) {
-            case 0: {
-                this.drive( message )
-                // this.timeout = Math.abs( this.dx ) + Math.abs( this.dy )
-                this.timeout = 1 + Math.abs( this.dy )
-                break
-            }
-            case 1: {
-                this.targetTime = this.world.time + message
-                this.timeTravelCountdown = this.timeTravelDelay
-                this.timeout = this.timeTravelDelay + 1
-                break
-            }
-        }
-    }
-
-    in( port: number ) {
-        let { world, x, y } = this
-        switch ( port ) {
-            case 0: return this.onGround() ? 1 : 0
-        }
-        return 0
     }
 
     drive( dx: number ) {
@@ -127,12 +102,40 @@ export class EntityBot extends Entity {
     update() {
         super.update()
         this.timeout = Math.max( 0, this.timeout - 1 )
-        for ( let i = 0; this.timeout == 0 && i < 100; i++ )
-            this.vm.step()
+        this.runVM()
         this.move( 0, 1 )
         this.maybeTimeTravel()
         this.timeTravelCountdown--
         this.arivalCountdown--
+    }
+
+    runVM() {
+        let input = ( port: number ) => {
+            switch ( port ) {
+                case 0: return this.onGround() ? 1 : 0
+            }
+            return 0
+        }
+
+        let output = ( port: number, message: number ) => {
+            switch ( port ) {
+                case 0: {
+                    this.drive( message )
+                    // this.timeout = Math.abs( this.dx ) + Math.abs( this.dy )
+                    this.timeout = 1 + Math.abs( this.dy )
+                    break
+                }
+                case 1: {
+                    this.targetTime = this.world.time + message
+                    this.timeTravelCountdown = this.timeTravelDelay
+                    this.timeout = this.timeTravelDelay + 1
+                    break
+                }
+            }
+        }
+
+        for ( let i = 0; this.timeout == 0 && i < 100; i++ )
+            this.vm.step( input, output )
     }
 
     maybeTimeTravel() {
