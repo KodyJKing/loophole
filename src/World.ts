@@ -6,8 +6,9 @@ import Game from "./Game"
 import Canvas from "geode/lib/graphics/Canvas"
 import Input from "geode/lib/Input"
 import Vector2 from "geode/lib/math/Vector2"
+import { playSound } from "geode/lib/audio"
 
-type TileLayer = ( Tile | undefined )[]
+type TileLayer = ( number | undefined )[]
 
 export enum TileLayers {
     background,
@@ -21,12 +22,9 @@ export default class World {
     entities!: Entity[]
     blocked!: boolean[]
     triggers!: { [ name: string ]: boolean }
-
     width!: number
     height!: number
-
     stars!: Starfield
-
     time = 0
 
     static create( width: number, height: number ) {
@@ -44,6 +42,7 @@ export default class World {
 
     initDraw() {
         this.stars = Starfield.create()
+        this.triggers = {}
         for ( let entity of this.entities )
             entity.initDraw()
     }
@@ -52,7 +51,6 @@ export default class World {
         let { width, height } = this
         this.blocked = new Array( width * height )
         for ( let i = 0; i < this.blocked.length; i++ ) this.blocked[ i ] = false
-        this.triggers = {}
         for ( let entity of this.entities )
             entity.initPlay()
     }
@@ -88,16 +86,18 @@ export default class World {
     }
 
     getTile( x, y, layer = TileLayers.center ) {
+        if ( !this.inBounds( x, y ) )
+            return undefined
         let tiles = this.layers[ layer ]
-        if ( this.inBounds( x, y ) )
-            return tiles[ this.index( x, y ) ]
-        return null
+        let id = tiles[ this.index( x, y ) ]
+        if ( id == undefined ) return undefined
+        return Tile.registeredTiles[ id ]
     }
 
     setTile( x, y, tile: Tile, layer = TileLayers.center ) {
         let tiles = this.layers[ layer ]
         if ( this.inBounds( x, y ) ) {
-            tiles[ this.index( x, y ) ] = tile
+            tiles[ this.index( x, y ) ] = tile.id
         }
     }
 

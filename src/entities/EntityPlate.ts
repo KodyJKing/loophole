@@ -11,16 +11,20 @@ export default class EntityPlate extends Entity {
     layer = 1
     triggerName = "plateActive"
 
+    setActive( world: World, value: boolean ) {
+        this.active = value
+        world.triggers[ this.triggerName ] = value
+    }
+
     update( world: World ) {
-        this.active = false
-        world.triggers[ this.triggerName ] = false
+        let active = false
         for ( let entity of world.entities ) {
             if ( entity.x == this.x && entity.y == this.y && entity instanceof EntityBot ) {
-                this.active = true
-                world.triggers[ this.triggerName ] = true
+                active = true
                 break
             }
         }
+        this.setActive( world, active )
     }
 
     drawAfterTranslation( world: World, canvas: Canvas, fracTime: number ) {

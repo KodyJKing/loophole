@@ -20,6 +20,7 @@ export default class Game {
         world.initDraw()
         world.initPlay()
         this.timeline = new Timeline( world, ( world: World ) => world.update() )
+        console.log( this.timeline )
     }
 
     get world() { return this.timeline.state as World }
@@ -48,7 +49,6 @@ export default class Game {
 
     // ==== Time Logic ====
 
-    readonly stepsPerFrame = 1 / 15
     readonly stepsPerSecond = 4
     readonly rewindSpeed = 5
     private jumpTracker = new JumpTracker()
