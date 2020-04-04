@@ -6,6 +6,8 @@ import clone, { deepCompare } from "./common/clone"
 import JumpTracker from "./JumpTracker"
 import { getImage, getJSON } from "geode/lib/assets"
 import Canvas from "geode/lib/graphics/Canvas"
+import * as ageBeforeBeauty from "./levels/AgeBeforeBeauty.json"
+import loadTiledMap from "./loadTiledMap"
 
 type TimeModification = { time: number, modifiedState: World }
 
@@ -16,7 +18,8 @@ export default class Game {
     constructor() {
         Game.instance = this
         this.canvas = new Canvas( "canvas" )
-        let world = map0()
+        // let world = map0()
+        let world = loadTiledMap( ageBeforeBeauty )
         world.initDraw()
         world.initPlay()
         this.timeline = new Timeline( world, ( world: World ) => world.update() )

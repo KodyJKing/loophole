@@ -5,7 +5,6 @@ import Game from "../Game"
 import Canvas from "geode/lib/graphics/Canvas"
 import World from "../World"
 
-@Entity.register
 export default class EntityDoor extends Entity {
     extension: number = 0
     direction = 0

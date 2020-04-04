@@ -11,11 +11,6 @@ export default class Entity {
     dy = 0
     layer = 0
 
-    static registeredEntities: { [ name: string ]: any } = {}
-    static register( target: Function ) {
-        Entity.registeredEntities[ target.name ] = target
-    }
-
     displacementX( fracTime: number ) { return this.dx * Tile.width * ( fracTime - 1 ) }
     displacementY( fracTime: number ) { return this.dy * Tile.width * ( fracTime - 1 ) }
     pixelX( fracTime: number ) { return this.x * Tile.width + this.displacementX( fracTime ) }

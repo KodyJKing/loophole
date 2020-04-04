@@ -5,6 +5,8 @@ import Input from "geode/lib/Input"
 import Tile from "./tiles/Tile"
 import Vector2 from "geode/lib/math/Vector2"
 import GMath from "geode/lib/math/GMath"
+import * as ageBeforeBeauty from "./levels/AgeBeforeBeauty.json"
+import loadTiledMap from "./loadTiledMap"
 
 export default class Editor {
     readonly stepsPerSecond = 4
@@ -20,12 +22,8 @@ export default class Editor {
     constructor() {
         this.canvas = new Canvas( "canvas" )
         this.canvas.canvas.addEventListener( "contextmenu", e => e.preventDefault() )
-        // this.world = map0()
-        // this.world.initDraw()
-        World.loadMap( "levels/AgeBeforeBeauty", ( world ) => {
-            this.world = world
-            world.initDraw()
-        } )
+        this.world = loadTiledMap( ageBeforeBeauty )
+        this.world.initDraw()
 
         window.addEventListener( "wheel", e => {
             this.selectionFadeCooldown = 1
