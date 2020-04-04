@@ -6,6 +6,7 @@ import Game from "../Game"
 import Canvas from "geode/lib/graphics/Canvas"
 import World from "../World"
 
+@Entity.register
 export default class EntityPlate extends Entity {
     active = false
     layer = 1

@@ -7,6 +7,7 @@ import clone, { deepCompare } from "../common/clone"
 import { getImage } from "geode/lib/assets"
 import Canvas from "geode/lib/graphics/Canvas"
 
+@Entity.register
 export class EntityBot extends Entity {
     vm?: VM
     direction = 1

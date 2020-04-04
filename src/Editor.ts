@@ -8,7 +8,7 @@ import GMath from "geode/lib/math/GMath"
 
 export default class Editor {
     readonly stepsPerSecond = 4
-    world: World
+    world!: World
     canvas: Canvas
     time = 0
 
@@ -20,8 +20,12 @@ export default class Editor {
     constructor() {
         this.canvas = new Canvas( "canvas" )
         this.canvas.canvas.addEventListener( "contextmenu", e => e.preventDefault() )
-        this.world = map0()
-        this.world.initDraw()
+        // this.world = map0()
+        // this.world.initDraw()
+        World.loadMap( "levels/AgeBeforeBeauty", ( world ) => {
+            this.world = world
+            world.initDraw()
+        } )
 
         window.addEventListener( "wheel", e => {
             this.selectionFadeCooldown = 1
@@ -35,6 +39,9 @@ export default class Editor {
     }
 
     update( dt: number ) {
+        if ( !this.world )
+            return
+
         let { world, canvas } = this
         this.time += dt * this.stepsPerSecond
         world.time = Math.floor( this.time )

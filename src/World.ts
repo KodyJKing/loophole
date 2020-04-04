@@ -7,6 +7,11 @@ import Canvas from "geode/lib/graphics/Canvas"
 import Input from "geode/lib/Input"
 import Vector2 from "geode/lib/math/Vector2"
 import { playSound } from "geode/lib/audio"
+import { getJSON } from "geode/lib/assets"
+import { TilePanel } from "./tiles/Tiles"
+import { EntityBot } from "./entities/EntityBot"
+import EntityDoor from "./entities/EntityDoor"
+import EntityPlate from "./entities/EntityPlate"
 
 type TileLayer = ( number | undefined )[]
 
@@ -188,4 +193,49 @@ export default class World {
         for ( let i = 0; i < this.blocked.length; i++ )
             this.blocked[ i ] = false
     }
+
+    static loadMap( path: string, onLoad: ( world: World ) => void ) {
+        getJSON( path ).then( ( level: TiledLevel ) => {
+            let { width, height, layers } = level
+            let world = World.create( width, height )
+            for ( let layer of layers ) {
+                if ( layer.data ) {
+                    let layerId = TileLayers[ layer.name ]
+                    let i = 0
+                    for ( let y = 0; y < height; y++ ) {
+                        for ( let x = 0; x < width; x++ ) {
+                            let id = layer.data[ i++ ]
+                            if ( id != 0 )
+                                world.setTile( x, y, Tile.registeredTiles[ id - 1 ], layerId )
+                        }
+                    }
+                } else {
+                    for ( let obj of layer.objects ) {
+                        let entity = new ( Entity.registeredEntities[ obj.type ] )()
+                        let x = ( obj.x - obj.width * 0.5 ) / Tile.width
+                        let y = ( obj.y - obj.height * 0.5 ) / Tile.width
+                        world.addEntity( entity, x, y )
+                    }
+                }
+            }
+            onLoad( world )
+        } )
+    }
+}
+
+type TiledLevel = {
+    height: number
+    width: number
+    layers: {
+        data: number[]
+        objects: {
+            type: string
+            x: number, y: number
+            width: number, height: number
+        }[]
+        name: string
+    }[],
+    tilesets: {
+
+    }[]
 }

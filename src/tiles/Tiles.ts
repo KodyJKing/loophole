@@ -21,11 +21,11 @@ export class TileGeneric extends Tile {
     }
 }
 
-export const TilePanel = new TileGeneric( "TilePanel" ).register()
 export const TileBackPanel = new TileGeneric( "TileBackPanel" ).register()
-export const TileGlassPanel = new TileGeneric( "TileGlassPanel" ).register()
 export const TileCatwalk = new TileGeneric( "TileCatwalk" ).register()
-export const TileRail = new TileGeneric( "TileRail" ).register()
-export const TileLadder = new TileGeneric( "TileLadder" ).register()
 export const TileCrate = new TileGeneric( "TileCrate" ).register()
+export const TileGlassPanel = new TileGeneric( "TileGlassPanel" ).register()
+export const TileLadder = new TileGeneric( "TileLadder" ).register()
+export const TilePanel = new TileGeneric( "TilePanel" ).register()
+export const TileRail = new TileGeneric( "TileRail" ).register()
 export const TileThruster = new TileGeneric( "TileThruster" ).register()
