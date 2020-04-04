@@ -124,69 +124,8 @@
  "tileheight":32,
  "tilesets":[
         {
-         "columns":0,
          "firstgid":1,
-         "grid":
-            {
-             "height":1,
-             "orientation":"orthogonal",
-             "width":1
-            },
-         "margin":0,
-         "name":"LoopholeTiles1",
-         "spacing":0,
-         "tilecount":8,
-         "tileheight":32,
-         "tiles":[
-                {
-                 "id":0,
-                 "image":"..\/..\/www\/assets\/images\/TileBackPanel.png",
-                 "imageheight":32,
-                 "imagewidth":32
-                }, 
-                {
-                 "id":1,
-                 "image":"..\/..\/www\/assets\/images\/TileCatwalk.png",
-                 "imageheight":32,
-                 "imagewidth":32
-                }, 
-                {
-                 "id":2,
-                 "image":"..\/..\/www\/assets\/images\/TileCrate.png",
-                 "imageheight":32,
-                 "imagewidth":32
-                }, 
-                {
-                 "id":3,
-                 "image":"..\/..\/www\/assets\/images\/TileGlassPanel.png",
-                 "imageheight":32,
-                 "imagewidth":32
-                }, 
-                {
-                 "id":4,
-                 "image":"..\/..\/www\/assets\/images\/TileLadder.png",
-                 "imageheight":32,
-                 "imagewidth":32
-                }, 
-                {
-                 "id":5,
-                 "image":"..\/..\/www\/assets\/images\/TilePanel.png",
-                 "imageheight":32,
-                 "imagewidth":32
-                }, 
-                {
-                 "id":6,
-                 "image":"..\/..\/www\/assets\/images\/TileRail.png",
-                 "imageheight":32,
-                 "imagewidth":32
-                }, 
-                {
-                 "id":7,
-                 "image":"..\/..\/www\/assets\/images\/TileThruster.png",
-                 "imageheight":32,
-                 "imagewidth":64
-                }],
-         "tilewidth":64
+         "source":"..\/tiles\/LoopholeTiles.json"
         }],
  "tilewidth":32,
  "type":"map",

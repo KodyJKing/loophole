@@ -4,8 +4,9 @@ import Entity from "./entities/Entity"
 import Matrix3 from "geode/lib/math/Matrix3"
 import Canvas from "geode/lib/graphics/Canvas"
 import Vector2 from "geode/lib/math/Vector2"
-import { TilePanel } from "./tiles/Tiles"
-import { EntityRegistry } from "./EntityRegistry"
+
+import path from "path"
+import LoopholeTiles from "./tiles/LoopholeTiles"
 
 type TileLayer = ( number | undefined )[]
 
@@ -15,7 +16,6 @@ export enum TileLayers {
     foreground
 }
 
-const zoom = 2
 export default class World {
     layers!: TileLayer[]
     entities!: Entity[]
@@ -63,6 +63,7 @@ export default class World {
     }
 
     transform( canvas: Canvas ) {
+        const zoom = 2
         let { width, height } = canvas
         let { pixelWidth, pixelHeight } = this
         return Matrix3.transformation( - pixelWidth / 2, - pixelHeight / 2, 0, zoom, zoom, width / 2, height / 2 )
@@ -90,7 +91,7 @@ export default class World {
         let tiles = this.layers[ layer ]
         let id = tiles[ this.index( x, y ) ]
         if ( id == undefined ) return undefined
-        return Tile.registeredTiles[ id ]
+        return LoopholeTiles[ id ]
     }
 
     setTile( x, y, tile: Tile, layer = TileLayers.center ) {
@@ -132,15 +133,9 @@ export default class World {
     }
 
     draw( canvas: Canvas, fracTime: number ) {
-        // canvas.background( "#0a0311" )
-        // canvas.background( "#434da1" )
         canvas.background( "#151729" )
-
         this.stars.draw( canvas, this.time + fracTime )
-
-        let transform = this.transform( canvas )
-
-        canvas.push().applyMatrix( transform )
+        canvas.push().applyMatrix( this.transform( canvas ) )
         this.drawTiles( canvas, fracTime, TileLayers.background )
         this.drawTiles( canvas, fracTime, TileLayers.center )
         this.drawEntities( canvas, fracTime )

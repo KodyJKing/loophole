@@ -4,23 +4,15 @@ import EntityPlate from "./entities/EntityPlate"
 import { EntityMover } from "./entities/EntityMover"
 import Tile from "./tiles/Tile"
 import World, { TileLayers } from "./World"
-import { TilePanel, TileBackPanel, TileCatwalk, TileCrate, TileGlassPanel, TileLadder, TileRail, TileThruster } from "./tiles/Tiles"
 
-export default function loadTiledMap( level: any ) {
-    level = level as TiledLevel
+export default function loadTiledMap( _level: any ) {
+    let level = _level as TiledLevel
     let { width, height, layers } = level
     let world = World.create( width, height )
     for ( let layer of layers ) {
         if ( layer.data ) {
             let layerId = ( TileLayers as any )[ layer.name ]
-            let i = 0
-            for ( let y = 0; y < height; y++ ) {
-                for ( let x = 0; x < width; x++ ) {
-                    let id = layer.data[ i++ ]
-                    if ( id != 0 )
-                        world.setTile( x, y, tileTypes[ id - 1 ], layerId )
-                }
-            }
+            world.layers[ layerId ] = layer.data.map( id => id - 1 )
         } else {
             for ( let obj of layer.objects ) {
                 let entity = new ( entityTable[ obj.type ] )()
@@ -34,19 +26,10 @@ export default function loadTiledMap( level: any ) {
             }
         }
     }
+    console.log( world )
     return world
 }
 
-const tileTypes = [
-    TileBackPanel,
-    TileCatwalk,
-    TileCrate,
-    TileGlassPanel,
-    TileLadder,
-    TilePanel,
-    TileRail,
-    TileThruster
-]
 const entityTable: { [ name: string ]: any } = {}
 const entityTypes = [
     EntityBot,
@@ -73,8 +56,5 @@ type TiledLevel = {
             }[]
         }[]
         name: string
-    }[],
-    tilesets: {
-
     }[]
 }

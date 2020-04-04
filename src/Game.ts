@@ -1,6 +1,6 @@
 // import Canvas from "./common/Canvas"
 import Timeline from "./Timeline"
-import { map0 } from "./maps"
+// import { map0 } from "./maps"
 import World from "./World"
 import clone, { deepCompare } from "./common/clone"
 import JumpTracker from "./JumpTracker"
@@ -23,7 +23,6 @@ export default class Game {
         world.initDraw()
         world.initPlay()
         this.timeline = new Timeline( world, ( world: World ) => world.update() )
-        getJSON( "levels/AgeBeforeBeauty" ).then( v => console.log( v ) )
     }
 
     get world() { return this.timeline.state as World }
