@@ -8,6 +8,7 @@ import { getImage, getJSON } from "geode/lib/assets"
 import Canvas from "geode/lib/graphics/Canvas"
 import * as ageBeforeBeauty from "./levels/AgeBeforeBeauty.json"
 import loadTiledMap from "./loadTiledMap"
+import GMath from "geode/lib/math/GMath"
 
 type TimeModification = { time: number, modifiedState: World }
 
@@ -56,10 +57,9 @@ export default class Game {
     private jumpTracker = new JumpTracker()
     private timeModification: TimeModification | null = null
     private timeline: Timeline<World>
-    private slowDown = 0
+    private speedAdjust = 1
     time = 0
 
-    get speedUp() { return 1 - this.slowDown }
     get fracTime() { return this.time % 1 }
     get timeDirection() {
         return this.timeModification !== null ?
@@ -67,21 +67,22 @@ export default class Game {
             1
     }
 
+    get speedAdjustTarget() {
+        return this.timeDirection > 0 ? 1 : -this.rewindSpeed
+    }
+
     private updateTime( dt: number ) {
         if ( this.timeModification !== null ) {
             if ( Math.floor( this.time ) == this.timeModification.time ) {
                 this.timeline.applyModification( this.timeModification.time, this.timeModification.modifiedState )
                 this.timeModification = null
-                this.slowDown = 1
-            } else {
-                this.time = Math.max( 0, this.time + this.rewindSpeed * this.timeDirection * this.stepsPerSecond * dt * this.speedUp )
+                this.speedAdjust = 1
             }
-        } else {
-            this.time += this.stepsPerSecond * dt * this.speedUp
         }
+        this.speedAdjust = GMath.lerp( this.speedAdjust, this.speedAdjustTarget, 0.1 )
+        this.time += this.stepsPerSecond * dt * this.speedAdjust
         let step = Math.floor( this.time )
         this.timeline.gotoTime( step )
-        this.slowDown *= Math.pow( 0.1, this.stepsPerSecond * dt )
     }
 
     private getModifiedWorldState( time, applyChanges: ( world: World ) => void ) {
@@ -100,7 +101,6 @@ export default class Game {
             this.jumpTracker.resolveJump( time )
         } else {
             this.jumpTracker.openJump( time )
-            this.slowDown = 1
         }
     }
 }
