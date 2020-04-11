@@ -9,6 +9,7 @@ export default class EntityDoor extends Entity {
     extension: number = 0
     direction = 0
     triggerName = "plateActive"
+    layer = 1
 
     drawAfterTranslation( world: World, canvas: Canvas, fracTime: number ) {
         let sheet = getImage( "EntityDoor" )

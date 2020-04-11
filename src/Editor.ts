@@ -79,7 +79,7 @@ export default class Editor {
         let blockPos = this.blockPos( Input.mouseScreenPosition( canvas ) )
         let worldPos = blockPos.multiply( Tile.width )
         canvas.push()
-        canvas.applyMatrix( world.transform( canvas ) )
+        canvas.applyMatrix( world.worldToScreenMatrix( canvas ) )
         canvas.vrect( worldPos, new Vector2( Tile.width, Tile.width ) ).strokeStyle( "#FF6F6F" ).stroke()
         canvas.vtranslate( worldPos )
         canvas.alpha( Math.sin( this.time ) * 0.25 + 0.75 )

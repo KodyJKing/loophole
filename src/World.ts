@@ -62,7 +62,7 @@ export default class World {
         return this.height * Tile.width
     }
 
-    transform( canvas: Canvas ) {
+    worldToScreenMatrix( canvas: Canvas ) {
         const zoom = 2
         let { width, height } = canvas
         let { pixelWidth, pixelHeight } = this
@@ -70,11 +70,11 @@ export default class World {
     }
 
     screenSpaceToBlockSpace( canvas: Canvas, v: Vector2 ) {
-        return this.transform( canvas ).inverse().multiplyVec2( v ).divide( Tile.width )
+        return this.worldToScreenMatrix( canvas ).inverse().multiplyVec2( v ).divide( Tile.width )
     }
 
     blockSpaceToScreenSpace( canvas: Canvas, v: Vector2 ) {
-        return this.transform( canvas ).multiplyVec2( v.multiply( Tile.width ) )
+        return this.worldToScreenMatrix( canvas ).multiplyVec2( v.multiply( Tile.width ) )
     }
 
     inBounds( x, y ) {
@@ -135,7 +135,7 @@ export default class World {
     draw( canvas: Canvas, fracTime: number ) {
         canvas.background( "#151729" )
         this.stars.draw( canvas, this.time + fracTime )
-        canvas.push().applyMatrix( this.transform( canvas ) )
+        canvas.push().applyMatrix( this.worldToScreenMatrix( canvas ) )
         this.drawTiles( canvas, fracTime, TileLayers.background )
         this.drawTiles( canvas, fracTime, TileLayers.center )
         this.drawEntities( canvas, fracTime )
