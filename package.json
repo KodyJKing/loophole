@@ -6,7 +6,7 @@
     "license": "none",
     "scripts": {
         "dev": "yarn install && yarn build && yarn link geode",
-        "build": "tsc && yarn buildPeg",
+        "build": "tsc && yarn buildpeg",
         "watch": "tsc -w",
         "buildpeg": "pegjs -o src/vm/assemblyParser.js src/vm/assemblyParser.pegjs",
         "watchpeg": "nodemon --watch src/vm -e pegjs -x yarn buildpeg",
