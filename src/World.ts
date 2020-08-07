@@ -4,8 +4,6 @@ import Entity from "./entities/Entity"
 import Matrix3 from "geode/lib/math/Matrix3"
 import Canvas from "geode/lib/graphics/Canvas"
 import Vector2 from "geode/lib/math/Vector2"
-
-import path from "path"
 import LoopholeTiles from "./tiles/LoopholeTiles"
 
 type TileLayer = ( number | undefined )[]

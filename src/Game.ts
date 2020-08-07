@@ -17,6 +17,7 @@ export default class Game {
     canvas: Canvas
 
     constructor() {
+        ( window as any ).game = this
         Game.instance = this
         this.canvas = new Canvas( "canvas" )
         // let world = map0()

@@ -10,6 +10,16 @@ export function markDirty( object, value ) {
     object.$dirty = value
 }
 
+function createInstance( constructor ) {
+    if ( constructor == Array )
+        return []
+    let result
+    // result = = new cur.constructor()
+    result = {}
+    result.__proto__ = constructor.prototype
+    return result
+}
+
 export default function clone( cur, prev: any = undefined, cloned = new Map() ) {
     if ( isValueType( cur ) )
         return cur
@@ -23,7 +33,7 @@ export default function clone( cur, prev: any = undefined, cloned = new Map() ) 
     if ( cloned.has( cur ) )
         return cloned.get( cur )
 
-    let result = new cur.constructor()
+    let result = createInstance( cur.constructor )
     let deepEqual = ( prev != undefined )
     cloned.set( cur, result )
     for ( let key in cur ) {

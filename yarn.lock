@@ -2990,6 +2990,13 @@ isobject@^4.0.0:
   resolved "https://registry.yarnpkg.com/isobject/-/isobject-4.0.0.tgz#3f1c9155e73b192022a80819bacd0343711697b0"
   integrity sha512-S/2fF5wH8SJA/kmwr6HYhK/RI/OkhD84k8ntalo0iJjZikgq1XFvR5M8NPT1x5F7fBwCG3qHfnzeP/Vh/ZxCUA==
 
+js-interpreter@2.2.0:
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/js-interpreter/-/js-interpreter-2.2.0.tgz#a4f8699f833898f43e5deadffef52310e4649432"
+  integrity sha512-eZq/kAEjxahuGowG91tWLVgzPuLGGqyakTFF7JPlblV6b/Uu9EOnYxs5EOSVQlKwHoq7MND0gu1zk3OGs5a6Iw==
+  dependencies:
+    minimist "^1.2.0"
+
 js-string-escape@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/js-string-escape/-/js-string-escape-1.0.1.tgz#e2625badbc0d67c7533e9edc1068c587ae4137ef"

@@ -7,10 +7,10 @@ function run( command, arg ) {
     let args = [ arg ]
     let cp = spawn( command + ( windows ? ".cmd" : "" ), args, { stdio: [ process.stdin, process.stdout, process.stderr ] } )
     cp.on( "error", ( err ) => {
-        console.log( `Error running ${command} ${args.join( ' ' )}: ${err}` )
+        console.log( `Error running ${ command } ${ args.join( ' ' ) }: ${ err }` )
     } )
 }
 
-run( "yarn", "watch" )
+run( "yarn", "watchcompile" )
 run( "yarn", "webpack" )
 run( "yarn", "watchpeg" )
