@@ -53,7 +53,7 @@ export default class Game {
 
     // ==== Time Logic ====
 
-    readonly stepsPerSecond = 10
+    readonly stepsPerSecond = 6
     readonly rewindSpeed = 5
     private jumpTracker = new JumpTracker()
     private timeModification: TimeModification | null = null
@@ -81,7 +81,11 @@ export default class Game {
             }
         }
         this.speedAdjust = GMath.lerp( this.speedAdjust, this.speedAdjustTarget, 0.1 )
-        this.time += this.stepsPerSecond * dt * this.speedAdjust
+        let intendedDeltaTime = this.stepsPerSecond * dt * this.speedAdjust
+        let deltaTime = Math.min( intendedDeltaTime, 1 )
+        if ( deltaTime != intendedDeltaTime )
+            console.log( "Cannot keep up. Running under desired step rate." )
+        this.time += deltaTime
         let step = Math.floor( this.time )
         this.timeline.gotoTime( step )
     }

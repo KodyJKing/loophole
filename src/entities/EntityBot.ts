@@ -125,12 +125,10 @@ export class EntityBot extends Entity {
                 world.addEntity( copy, copy.x, copy.y )
 
                 for ( let other of world.entities ) {
-                    if ( other instanceof EntityBot && ( copy !== other ) ) {
-                        if ( deepCompare( copy, other, true ) ) {
-                            // if ( deepCompare( copy, other ) ) {
-                            world.entities.pop()
-                            break
-                        }
+                    const logDifferences = false
+                    if ( other instanceof EntityBot && ( copy !== other ) && deepCompare( copy, other, logDifferences ) ) {
+                        world.entities.pop()
+                        break
                     }
                 }
 

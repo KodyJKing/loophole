@@ -101,9 +101,6 @@ export function deepCompare( a, b, verbose = false, path: string[] = [], visited
         return false
     }
 
-    if ( pathStr == "interpreter.task.instigator" )
-        debugger
-
     for ( let key of Object.keys( a ) ) {
         path.push( key )
         if ( !deepCompare( a[ key ], b[ key ], verbose, path, visitedA, visitedB ) )
