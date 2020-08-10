@@ -13,17 +13,21 @@ export function markDirty( object, value ) {
 function createInstance( constructor ) {
     if ( constructor == Array )
         return []
-    if ( constructor == Map )
-        return new Map()
-    if ( constructor == Set )
-        return new Set()
+    // if ( constructor == Map )
+    //     return new Map()
+    // if ( constructor == Set )
+    //     return new Set()
     let result
-    // result = new constructor()
     result = {}
     result.__proto__ = constructor.prototype
     return result
 }
 
+/**
+ * Clones an arbitrary data structure, preserving topology.
+ * When a previous version is passed, the clone is performed relative this
+ * and will reuse anything found the be deeply-equal or explicitly marked not dirty.
+ */
 export default function clone( cur, prev: any = undefined, cloned = new Map() ) {
     if ( isValueType( cur ) )
         return cur
@@ -50,8 +54,10 @@ export default function clone( cur, prev: any = undefined, cloned = new Map() ) 
             deepEqual = false
     }
 
-    if ( deepEqual )
+    if ( deepEqual ) {
+        cloned.set( cur, prev )
         return prev
+    }
 
     return result
 }
