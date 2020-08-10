@@ -6,9 +6,11 @@ import World from "../World"
 import clone, { deepCompare } from "../common/clone"
 import { getImage } from "geode/lib/assets"
 import Canvas from "geode/lib/graphics/Canvas"
+import Interpreter from "loophole-lang/lib/interpreter/Interpreter"
 
 export class EntityBot extends Entity {
     vm?: VM
+    interpreter?: Interpreter
     direction = 1
     timeout = 0
 
@@ -17,40 +19,17 @@ export class EntityBot extends Entity {
     timeTravelDelay = 2
     arivalCountdown = 0
 
+    age = 0
+
     initPlay() {
         let source = `
-            #def driveport 0
-            #def timetravelport 1
-            #def ongroundport 0
-
-            jmp main
-
-            drive:
-                in ongroundport bx
-                jf bx $-1
-                out driveport ax
-                loop ix $-4
-            end
-
-            wait:
-                mov 100 cx
-                loop cx $-0
-            end
-
-            main:
-                mov 1 ax
-                mov 7 ix
-                call drive
-
-                call wait
-
-                out timetravelport -5
-
-                mov 1 ax
-                mov 5 ix
-                call drive
+            driveN(n) { for (i = 0; i < n; i = i + 1) drive(1) }
+            driveN(9)
+            sleep(3)
+            jump(-7)
+            driveN(7)
         `
-        this.vm = VM.create( source, 1024 )
+        this.interpreter = new Interpreter( source )
     }
 
     drive( world: World, dx: number ) {
@@ -95,40 +74,38 @@ export class EntityBot extends Entity {
     update( world: World ) {
         super.update( world )
         this.timeout = Math.max( 0, this.timeout - 1 )
-        this.runVM( world )
+        this.runScript( world )
         this.move( world, 0, 1 )
         this.maybeTimeTravel( world )
         this.timeTravelCountdown--
         this.arivalCountdown--
+        this.age++
     }
 
-    runVM( world: World ) {
-        if ( !this.vm ) return
-        let input = ( port: number ) => {
-            switch ( port ) {
-                case 0: return this.onGround( world ) ? 1 : 0
-            }
-            return 0
-        }
-
-        let output = ( port: number, message: number ) => {
-            switch ( port ) {
-                case 0: {
-                    this.drive( world, message )
-                    this.timeout = 1 + Math.abs( this.dy )
-                    break
-                }
-                case 1: {
-                    this.targetTime = world.time + message
-                    this.timeTravelCountdown = this.timeTravelDelay
-                    this.timeout = this.timeTravelDelay + 1
-                    break
-                }
+    runScript( world: World ) {
+        if ( !this.interpreter || this.timeout > 0 ) return
+        let natives = {
+            onGround: () => this.onGround( world ),
+            drive: direction => {
+                if ( typeof direction != "number" ) return
+                this.drive( world, direction )
+                this.timeout = 1 + Math.abs( this.dy )
+            },
+            jump: deltaTime => {
+                if ( typeof deltaTime != "number" ) return
+                this.targetTime = world.time + deltaTime
+                this.timeTravelCountdown = this.timeTravelDelay
+                this.timeout = this.timeTravelDelay + 1
+            },
+            sleep: time => {
+                if ( typeof time != "number" ) return
+                this.timeout = time
             }
         }
-
-        for ( let i = 0; this.timeout == 0 && i < 100; i++ )
-            this.vm.step( input, output )
+        this.interpreter.setNatives( natives )
+        for ( let i = 0; this.timeout == 0 && i < 10000; i++ )
+            this.interpreter.step()
+        this.interpreter.nativeBindings = undefined
     }
 
     maybeTimeTravel( world: World ) {
@@ -148,9 +125,12 @@ export class EntityBot extends Entity {
                 world.addEntity( copy, copy.x, copy.y )
 
                 for ( let other of world.entities ) {
-                    if ( ( copy !== other ) && deepCompare( copy, other ) ) {
-                        world.entities.pop()
-                        break
+                    if ( other instanceof EntityBot && ( copy !== other ) ) {
+                        if ( deepCompare( copy, other, true ) ) {
+                            // if ( deepCompare( copy, other ) ) {
+                            world.entities.pop()
+                            break
+                        }
                     }
                 }
 

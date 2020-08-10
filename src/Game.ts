@@ -53,7 +53,7 @@ export default class Game {
 
     // ==== Time Logic ====
 
-    readonly stepsPerSecond = 4
+    readonly stepsPerSecond = 10
     readonly rewindSpeed = 5
     private jumpTracker = new JumpTracker()
     private timeModification: TimeModification | null = null

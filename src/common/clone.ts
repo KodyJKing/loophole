@@ -13,8 +13,12 @@ export function markDirty( object, value ) {
 function createInstance( constructor ) {
     if ( constructor == Array )
         return []
+    if ( constructor == Map )
+        return new Map()
+    if ( constructor == Set )
+        return new Set()
     let result
-    // result = = new cur.constructor()
+    // result = new constructor()
     result = {}
     result.__proto__ = constructor.prototype
     return result
@@ -27,19 +31,19 @@ export default function clone( cur, prev: any = undefined, cloned = new Map() ) 
     if ( cur.$static == true )
         return cur
 
-    if ( cur.$dirty === false && prev != undefined )
+    if ( cur.$dirty === false && prev !== undefined )
         return prev
 
     if ( cloned.has( cur ) )
         return cloned.get( cur )
 
     let result = createInstance( cur.constructor )
-    let deepEqual = ( prev != undefined )
+    let deepEqual = ( prev !== undefined )
     cloned.set( cur, result )
     for ( let key in cur ) {
         if ( key == "$dirty" ) continue
         let curVal = cur[ key ]
-        let prevVal = prev ? prev[ key ] : undefined
+        let prevVal = prev !== undefined ? prev[ key ] : undefined
         let clonedVal = clone( curVal, prevVal, cloned )
         result[ key ] = clonedVal
         if ( clonedVal !== prevVal )
@@ -90,6 +94,9 @@ export function deepCompare( a, b, verbose = false, path: string[] = [], visited
         log( "key count inequality at " + pathStr )
         return false
     }
+
+    if ( pathStr == "interpreter.task.instigator" )
+        debugger
 
     for ( let key of Object.keys( a ) ) {
         path.push( key )

@@ -4,7 +4,7 @@ import clone from "./common/clone"
 export default class Timeline<T> {
     state: T
     time: number = 0
-    readonly snapshotInterval: number = 100
+    readonly snapshotInterval: number = 1
     private snapshots: { [ name: number ]: T }
     update: ( T ) => void
 
