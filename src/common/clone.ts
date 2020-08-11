@@ -17,6 +17,8 @@ function createInstance( constructor ) {
     //     return new Map()
     // if ( constructor == Set )
     //     return new Set()
+    if ( !constructor )
+        return new Object( null )
     let result
     result = {}
     result.__proto__ = constructor.prototype

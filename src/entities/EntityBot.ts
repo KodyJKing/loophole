@@ -23,7 +23,10 @@ export class EntityBot extends Entity {
 
     initPlay() {
         let source = `
-            driveN(n) { for (i = 0; i < n; i = i + 1) drive(1) }
+            driveN(n) { 
+                for (i = 0; i < n; i = i + 1)
+                    drive(1) 
+            }
             driveN(9)
             sleep(3)
             jump(-7)
