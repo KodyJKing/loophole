@@ -28,7 +28,8 @@ function createInstance( constructor ) {
 /**
  * Clones an arbitrary data structure, preserving topology.
  * When a previous version is passed, the clone is performed relative this
- * and will reuse anything found the be deeply-equal or explicitly marked not dirty.
+ * and will reuse anything found to be unchanged, either found to be 
+ * deeply-equal or explicitly marked not dirty.
  */
 export default function clone( cur, prev: any = undefined, cloned = new Map() ) {
     if ( isValueType( cur ) )

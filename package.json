@@ -24,6 +24,7 @@
     },
     "dependencies": {
         "express": "^4.17.1",
-        "geode": "https://github.com/KodyJKing/geode.git#1.0.0"
+        "geode": "https://github.com/KodyJKing/geode.git#1.0.0",
+        "webpack-dev-server": "^3.11.2"
     }
 }
