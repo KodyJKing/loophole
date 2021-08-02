@@ -7,24 +7,24 @@
     "scripts": {
         "dev": "yarn install && yarn build && yarn link geode",
         "build": "tsc && yarn buildpeg",
-        "watchcompile": "tsc -w",
         "buildpeg": "pegjs -o src/vm/assemblyParser.js src/vm/assemblyParser.pegjs",
-        "watchpeg": "nodemon --watch src/vm -e pegjs -x yarn buildpeg",
-        "webpack": "webpack serve --mode=development",
-        "watch": "npm-run-all --parallel watch:**",
-        "w": "node watchall.js",
+        "watch:compile": "tsc -w",
+        "watch:watchpeg": "nodemon --watch src/vm -e pegjs -x yarn buildpeg",
+        "watch:webpack": "webpack serve --mode=development",
+        "watch": "npm-run-all --parallel watch:*",
+        "w": "npm-run-all --parallel watch:*",
         "test": "ava --watch --verbose"
     },
     "private": true,
     "devDependencies": {
         "ava": "^3.15.0",
+        "npm-run-all": "^4.1.5",
         "pegjs": "^0.10.0",
         "webpack": "^5.47.1",
         "webpack-cli": "^4.7.2",
-        "npm-run-all": "^4.1.5"
+        "webpack-dev-server": "^3.11.2"
     },
     "dependencies": {
-        "geode": "https://github.com/KodyJKing/geode.git#1.0.0",
-        "webpack-dev-server": "^3.11.2"
+        "geode": "https://github.com/KodyJKing/geode.git#1.0.0"
     }
 }
