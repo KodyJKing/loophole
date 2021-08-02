@@ -53,6 +53,10 @@ export default class Starfield {
             //     .fill()
             //     .pop()
 
+            x = ( x | 0 ) + .5
+            y = ( y | 0 ) + .5
+            w = ( w | 0 ) + .5
+
             canvas.fillStyle( "rgba(255, 255, 255, " + alpha + ")" )
                 .rect( x - w, y - w, w * 2, w * 2 )
                 .fill()
